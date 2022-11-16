@@ -36,7 +36,8 @@ public class CommonCodeController {
 
   @ApiOperation(value = "Common Code 등록")
   @PostMapping(value = "", produces = {Constants.RESPONSE_CONTENT_TYPE})
-  public ResponseEntity<String> insert(CommonCodeInsertRequestModel commonCodeInsertRequestModel, BindingResult bindingResult) {
+  public ResponseEntity<String> insert(CommonCodeInsertRequestModel commonCodeInsertRequestModel,
+      BindingResult bindingResult) {
 
     ResponseModel responseModel = new ResponseModel();
 
