@@ -1,6 +1,6 @@
 #!/bin/bash
 
-docker_name="nftmoa-internal-api"
+docker_name="realestate-internal-api"
 
 # gralew
 ./gradlew clean
