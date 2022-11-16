@@ -37,7 +37,7 @@ public class Constants {
   public static final String MSG_NO_DATA = "데이터가 없습니다..";
   public static final String MSG_DUPLICATED_DATA = "이미 중복된 데이터가 존재합니다.";
 
-  public static final String MSG_REQUIRE_FIELD_ERROR = "%s 필드의 값을 입력해 주세요.";
+  public static final String MSG_REQUIRE_FIELD_ERROR = "%s 필드의 값을 입력(확인)해주세요.";
   public static final String MSG_MIN_LENGTH_FIELD_ERROR = "최소 %d자 이상 입력해야합니다.";
   public static final String MSG_MIN_LENGTH_OVER_ERROR = "최소 %d개 이상 입력해야합니다.";
   public static final String MSG_MAX_LENGTH_FIELD_ERROR = "최대 %d자까지 입력 가능합니다.";
@@ -60,7 +60,6 @@ public class Constants {
   public static final String MSG_NOT_VERIFIED_EMAIL = "메일 인증이 되지 않았습니다.";
   public static final String MSG_ALREADY_VERIFIED_SMS = "이미 SMS 인증이 되었습니다.";
   public static final String MSG_VERIFY_CONTENT_SMS = "From NFTMOA: %s is your verification code.\nIf you didn’t request this code, please contact us on information@labshigh.io";
-
 
 
   // 계정 종류 (1:email, 2:metamask)

@@ -4,7 +4,7 @@ app:
 spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://db-9c9jf-kr.vpc-pub-cdb.ntruss.com:3306/nftmoa?&zeroDateTimeBehavior=convertToNull&autoReconnect=true&noAccessToProcedureBodies=true&useUnicode=true&characterEncoding=UTF-8&useSSL=false&serverTimezone=Asia/Seoul
+    url: jdbc:mysql://db-9c9jf-kr.vpc-pub-cdb.ntruss.com:3306/realestate?&zeroDateTimeBehavior=convertToNull&autoReconnect=true&noAccessToProcedureBodies=true&useUnicode=true&characterEncoding=UTF-8&useSSL=false&serverTimezone=Asia/Seoul
     username: metassom
     password: metassom_2022
     type: com.zaxxer.hikari.HikariDataSource

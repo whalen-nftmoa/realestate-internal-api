@@ -32,68 +32,68 @@
 
   <select id="check" resultType="int">
     SELECT COUNT(*) AS cnt
-    FROM common_code AS cc
-    WHERE cc.deleted_flag = false AND
-          cc.uid = #{uid}
+    FROM common_code
+    WHERE deleted_flag = false AND
+          uid = #{uid}
   </select>
   <select id="checkDuplicate" resultType="int">
     SELECT COUNT(*) AS cnt
-    FROM common_code AS cc
-    WHERE cc.deleted_flag = false AND
-          cc.name = #{name}
+    FROM common_code
+    WHERE deleted_flag = false AND
+          name = #{name}
     <if test="parentCommonCodeUid != null">
-      AND cc.parent_common_code_uid = #{parentCommonCodeUid}
+      AND parent_common_code_uid = #{parentCommonCodeUid}
     </if>
   </select>
   <select id="count" resultType="int">
     SELECT COUNT(*) AS cnt
-    FROM common_code AS cc
-    WHERE cc.deleted_flag = false
+    FROM common_code
+    WHERE deleted_flag = false
     <if test="request.commonCodeUid != null">
-      AND cc.parent_common_code_uid = #{request.commonCodeUid}
+      AND parent_common_code_uid = #{request.commonCodeUid}
     </if>
     <if test="request.usedFlag != null">
-      AND cc.used_flag = #{request.usedFlag}
+      AND used_flag = #{request.usedFlag}
     </if>
     <if test="request.name != null and !request.name.equals('')">
-      AND cc.name LIKE CONCAT('%', #{request.name}, '%')
+      AND name LIKE CONCAT('%', #{request.name}, '%')
     </if>
   </select>
   <select id="list" resultType="com.labshigh.realestate.internal.api.commonCode.dao.CommonCodeDAO">
-    SELECT cc.uid,
-           cc.created_at,
-           cc.updated_at,
-           cc.deleted_flag,
-           cc.used_flag,
-           cc.name,
-           cc.image,
-           cc.sort,
-           cc.parent_common_code_uid
-    FROM common_code AS cc
-    WHERE cc.deleted_flag = false
+    SELECT uid,
+           created_at,
+           updated_at,
+           deleted_flag,
+           used_flag,
+           name,
+           image,
+           sort,
+           parent_common_code_uid
+    FROM common_code
+    WHERE deleted_flag = false
     <if test="request.commonCodeUid != null">
-      AND cc.parent_common_code_uid = #{request.commonCodeUid}
+      AND parent_common_code_uid = #{request.commonCodeUid}
     </if>
     <if test="request.usedFlag != null">
-      AND cc.used_flag = #{request.usedFlag}
+      AND used_flag = #{request.usedFlag}
     </if>
     <if test="request.name != null and !request.name.equals('')">
-      AND cc.name LIKE CONCAT('%', #{request.name}, '%')
+      AND name LIKE CONCAT('%', #{request.name}, '%')
     </if>
-    ORDER BY cc.sort ASC
+    ORDER BY sort ASC
   </select>
   <select id="detail" resultType="com.labshigh.realestate.internal.api.commonCode.dao.CommonCodeDAO">
-    SELECT cc.uid,
-           cc.created_at,
-           cc.updated_at,
-           cc.deleted_flag,
-           cc.used_flag,
-           cc.name,
-           cc.image,
-           cc.sort,
-           cc.parent_common_code_uid
-    FROM common_code AS cc
-    WHERE cc.deleted_flag = false
-      AND cc.uid = #{commonCodeUid}
+    SELECT uid,
+           created_at,
+           updated_at,
+           deleted_flag,
+           used_flag,
+           name,
+           image,
+           sort,
+           parent_common_code_uid
+    FROM common_code
+    WHERE deleted_flag = false AND
+          uid = #{commonCodeUid}
   </select>
 </mapper>
