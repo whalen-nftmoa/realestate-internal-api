@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.labshigh.realestate.internal.api.commonCode.mapper.CommonCodeMapper">
+  <insert id="insert" parameterType="com.labshigh.realestate.internal.api.commonCode.dao.CommonCodeDAO" useGeneratedKeys="true" keyProperty="uid">
+    INSERT INTO common_code (name, sort, used_flag, parent_common_code_uid) VALUES (#{name}, #{sort}, #{usedFlag}, #{parentCommonCodeUid})
+  </insert>
+
+  <update id="update" parameterType="com.labshigh.realestate.internal.api.commonCode.dao.CommonCodeDAO">
+    UPDATE common_code SET name = #{name},
+                           sort = #{sort},
+                           used_flag = #{usedFlag}
+    WHERE deleted_flag = false AND
+          uid = #{uid}
+  </update>
+  <update id="updatePhoto" parameterType="com.labshigh.realestate.internal.api.commonCode.dao.CommonCodeDAO">
+    UPDATE common_code SET image = #{image}
+    WHERE deleted_flag = false AND
+          uid = #{uid}
+  </update>
+  <update id="updateUsedFlag" parameterType="com.labshigh.realestate.internal.api.commonCode.dao.CommonCodeDAO">
+    UPDATE common_code SET used_flag = #{usedFlag}
+    WHERE deleted_flag = false AND
+          uid = #{uid}
+  </update>
+
+  <delete id="delete" parameterType="com.labshigh.realestate.internal.api.commonCode.dao.CommonCodeDAO">
+    UPDATE common_code SET deleted_flag = #{deletedFlag}
+    WHERE deleted_flag = false AND
+          uid = #{uid}
+  </delete>
+
+  <select id="check" resultType="int">
+    SELECT COUNT(*) AS cnt
+    FROM common_code AS cc
+    WHERE cc.deleted_flag = false AND
+          cc.uid = #{uid}
+  </select>
+  <select id="checkDuplicate" resultType="int">
+    SELECT COUNT(*) AS cnt
+    FROM common_code AS cc
+    WHERE cc.deleted_flag = false AND
+          cc.name = #{name}
+    <if test="parentCommonCodeUid != null">
+      AND cc.parent_common_code_uid = #{parentCommonCodeUid}
+    </if>
+  </select>
+  <select id="count" resultType="int">
+    SELECT COUNT(*) AS cnt
+    FROM common_code AS cc
+    WHERE cc.deleted_flag = false
+    <if test="request.commonCodeUid != null">
+      AND cc.parent_common_code_uid = #{request.commonCodeUid}
+    </if>
+    <if test="request.usedFlag != null">
+      AND cc.used_flag = #{request.usedFlag}
+    </if>
+    <if test="request.name != null and !request.name.equals('')">
+      AND cc.name LIKE CONCAT('%', #{request.name}, '%')
+    </if>
+  </select>
+  <select id="list" resultType="com.labshigh.realestate.internal.api.commonCode.dao.CommonCodeDAO">
+    SELECT cc.uid,
+           cc.created_at,
+           cc.updated_at,
+           cc.deleted_flag,
+           cc.used_flag,
+           cc.name,
+           cc.image,
+           cc.sort,
+           cc.parent_common_code_uid
+    FROM common_code AS cc
+    WHERE cc.deleted_flag = false
+    <if test="request.commonCodeUid != null">
+      AND cc.parent_common_code_uid = #{request.commonCodeUid}
+    </if>
+    <if test="request.usedFlag != null">
+      AND cc.used_flag = #{request.usedFlag}
+    </if>
+    <if test="request.name != null and !request.name.equals('')">
+      AND cc.name LIKE CONCAT('%', #{request.name}, '%')
+    </if>
+    ORDER BY cc.sort ASC
+  </select>
+  <select id="detail" resultType="com.labshigh.realestate.internal.api.commonCode.dao.CommonCodeDAO">
+    SELECT cc.uid,
+           cc.created_at,
+           cc.updated_at,
+           cc.deleted_flag,
+           cc.used_flag,
+           cc.name,
+           cc.image,
+           cc.sort,
+           cc.parent_common_code_uid
+    FROM common_code AS cc
+    WHERE cc.deleted_flag = false
+      AND cc.uid = #{commonCodeUid}
+  </select>
+</mapper>

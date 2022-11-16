@@ -1,0 +1,47 @@
+app:
+  profile: dev
+
+spring:
+  redis:
+    host: localhost
+    port: 6379
+    database: 0
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://db-9c9jf-kr.vpc-pub-cdb.ntruss.com:3306/nftmoa?&zeroDateTimeBehavior=convertToNull&autoReconnect=true&noAccessToProcedureBodies=true&useUnicode=true&characterEncoding=UTF-8&useSSL=false&serverTimezone=Asia/Seoul
+    username: metassom
+    password: metassom_2022
+    type: com.zaxxer.hikari.HikariDataSource
+    hikari:
+      max-lifetime: 26000
+    initialization-mode: always
+    initialize: true
+    sql-script-encoding: utf-8
+    continue-on-error: true
+
+# server
+server:
+  tomcat:
+    basedir: /home/labshigh/logs/nftmoa-internal-api
+
+logging:
+  file: /home/labshigh/logs/nftmoa-internal-api/common.log
+  pattern:
+    dateformat: yyyy-MM-dd HH:mm:ss.SSS,Asia/Seoul
+    rolling-file-name: /home/labshigh/logs/nftmoa-internal-api/common.log.%d{yyyy-MM-dd}.%i.gz
+  level:
+    com:
+      labshigh:
+        realestate: DEBUG
+
+ncloud:
+  access-key: 0EB353356DD94BC5AA69
+  secret-key: AE5FB443EC6C50B3F856FD084EF4FE19EA6FF7A9
+  object-storage:
+    end-point: kr.object.ncloudstorage.com
+    region: kr-standard
+    bucket: nftmoa-upload-s3
+  nft-storage:
+    end-point: kr.object.ncloudstorage.com
+    region: kr-standard
+    bucket: nft-s3
