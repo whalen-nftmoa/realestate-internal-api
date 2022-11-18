@@ -4,9 +4,9 @@ app:
 spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://db-9cd8v.vpc-cdb.ntruss.com:3306/nftmoa?&zeroDateTimeBehavior=convertToNull&autoReconnect=true&noAccessToProcedureBodies=true&useUnicode=true&characterEncoding=UTF-8&useSSL=false&serverTimezone=Asia/Seoul
-    username: metassom
-    password: metassom_2022
+    url: jdbc:mysql://db-dppkk.vpc-cdb.ntruss.com/realestate?&zeroDateTimeBehavior=convertToNull&autoReconnect=true&noAccessToProcedureBodies=true&useUnicode=true&characterEncoding=UTF-8&useSSL=false&serverTimezone=Asia/Seoul
+    username: realestate
+    password: 6M6yTn4WL9A?X@BvofHm
     type: com.zaxxer.hikari.HikariDataSource
     hikari:
       max-lifetime: 26000

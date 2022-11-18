@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.labshigh.realestate.internal.api.member.mapper.MemberMapper">
+  <insert id="insert" parameterType="com.labshigh.realestate.internal.api.member.dao.MemberDao" useGeneratedKeys="true" keyProperty="uid">
+    INSERT INTO member (wallet_address) VALUES (#{walletAddress})
+  </insert>
+
+  <select id="get" resultType="com.labshigh.realestate.internal.api.member.dao.MemberDao">
+    SELECT uid,
+           created_at,
+           updated_at,
+           deleted_flag,
+           used_flag,
+           wallet_address
+    FROM member
+    WHERE deleted_flag = false AND
+          used_flag = true AND
+    <choose>
+      <when test="walletAddress != null">
+          wallet_address = #{walletAddress}
+      </when>
+      <when test="uid != null">
+        uid = #{uid}
+      </when>
+      <otherwise>
+        uid = #{uid}
+      </otherwise>
+    </choose>
+  </select>
+
+</mapper>
