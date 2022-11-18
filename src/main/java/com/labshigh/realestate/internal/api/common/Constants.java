@@ -102,6 +102,8 @@ public class Constants {
   public static final String MSG_MARKET_COMMENT_NOT_MY_COMMENT = "본인이 작성한 코멘트만 수정, 삭제가 가능합니다.";
   // Item
   public static final String MSG_ITEM_QUANTITY_ERROR = "수량이 0 이하 일수 없습니다.";
+  public static final String MSG_ITEM_MEMBER_ERROR = "본인이 생성 한 아이템만 판매가 가능합니다.";
+  public static final String MSG_ITEM_BUY_CURRENT_QUANTITY_ERROR = "판매 수량보다 구매하려는 수량이 많을 수 없습니다.";
 
   private Constants() {
     throw new IllegalStateException("Constants Class");

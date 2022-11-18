@@ -1,15 +1,9 @@
-package com.labshigh.realestate.internal.api.item.controller;
+package com.labshigh.realestate.internal.api.marketItem.controller;
 
 import com.labshigh.realestate.core.models.ResponseModel;
 import com.labshigh.realestate.internal.api.common.Constants;
 import com.labshigh.realestate.internal.api.common.exceptions.ServiceException;
-import com.labshigh.realestate.internal.api.item.model.request.ItemInsertRequestModel;
-import com.labshigh.realestate.internal.api.item.model.request.ItemListRequestModel;
-import com.labshigh.realestate.internal.api.item.model.request.MarketItemInsertRequestModel;
-import com.labshigh.realestate.internal.api.item.service.ItemService;
-import com.labshigh.realestate.internal.api.item.validator.ItemInsertRequestValidator;
-import com.labshigh.realestate.internal.api.item.validator.ItemListRequestValidator;
-import com.labshigh.realestate.internal.api.item.validator.MarketItemInsertRequestValidator;
+import com.labshigh.realestate.internal.api.marketItem.service.MarketItemService;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,15 +18,16 @@ import org.springframework.web.bind.annotation.RestController;
 
 @Log4j2
 @RestController
-@RequestMapping("/api/item")
-public class ItemController {
+@RequestMapping("/api/marketItem")
+public class MarketItemController {
 
   @Autowired
-  private ItemService itemService;
+  private MarketItemService marketItemService;
 
-  @ApiOperation("Item 등록")
-  @PostMapping(value = "", produces = {Constants.RESPONSE_CONTENT_TYPE})
-  public ResponseEntity<String> insert(@RequestBody ItemInsertRequestModel itemInsertRequestModel,
+  @ApiOperation("MarketItem 구매")
+  @PostMapping(value = "/{marketItemUid}/buy", produces = {Constants.RESPONSE_CONTENT_TYPE})
+  public ResponseEntity<String> insertItemBuy(
+      @RequestBody ItemInsertRequestModel itemInsertRequestModel,
       BindingResult bindingResult) {
     ResponseModel responseModel = new ResponseModel();
 
@@ -58,7 +53,7 @@ public class ItemController {
   }
 
   @ApiOperation("Item 판매 정보 등록")
-  @PostMapping(value = "/{itemUid}/marketItem", produces = {Constants.RESPONSE_CONTENT_TYPE})
+  @PostMapping(value = "/marketItem", produces = {Constants.RESPONSE_CONTENT_TYPE})
   public ResponseEntity<String> insertMarketItem(
       @RequestBody MarketItemInsertRequestModel marketItemInsertRequestModel,
       BindingResult bindingResult) {

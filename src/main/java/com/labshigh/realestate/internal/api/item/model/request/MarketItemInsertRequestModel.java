@@ -11,6 +11,7 @@ import org.springframework.format.annotation.DateTimeFormat.ISO;
 public class MarketItemInsertRequestModel {
 
   private long itemUid;
+  private long memberUid;
   @DateTimeFormat(iso = ISO.DATE)
   private LocalDate startAt;
   @DateTimeFormat(iso = ISO.DATE)

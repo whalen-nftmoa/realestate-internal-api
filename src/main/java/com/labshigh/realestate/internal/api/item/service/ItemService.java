@@ -7,16 +7,16 @@ import com.labshigh.realestate.internal.api.common.utils.FileUploadUtils;
 import com.labshigh.realestate.internal.api.common.utils.enums.FileType;
 import com.labshigh.realestate.internal.api.item.dao.ItemDao;
 import com.labshigh.realestate.internal.api.item.dao.ItemFileDao;
-import com.labshigh.realestate.internal.api.item.dao.MarketItemDao;
 import com.labshigh.realestate.internal.api.item.mapper.ItemFileMapper;
 import com.labshigh.realestate.internal.api.item.mapper.ItemMapper;
-import com.labshigh.realestate.internal.api.item.mapper.MarketItemMapper;
 import com.labshigh.realestate.internal.api.item.model.request.ItemFileInsertRequestModel;
 import com.labshigh.realestate.internal.api.item.model.request.ItemInsertRequestModel;
 import com.labshigh.realestate.internal.api.item.model.request.ItemListRequestModel;
 import com.labshigh.realestate.internal.api.item.model.request.MarketItemInsertRequestModel;
 import com.labshigh.realestate.internal.api.item.model.response.ItemDetailResponseModel;
 import com.labshigh.realestate.internal.api.item.model.response.ItemListResponseModel;
+import com.labshigh.realestate.internal.api.marketItem.dao.MarketItemDao;
+import com.labshigh.realestate.internal.api.marketItem.mapper.MarketItemMapper;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
@@ -133,6 +133,10 @@ public class ItemService {
 
     if (dao == null) {
       throw new ServiceException(Constants.MSG_NO_DATA);
+    }
+
+    if (dao.getMemberUid() != requestModel.getMemberUid()) {
+      throw new ServiceException(Constants.MSG_ITEM_MEMBER_ERROR);
     }
 
     MarketItemDao marketItemDao = MarketItemDao.builder()
