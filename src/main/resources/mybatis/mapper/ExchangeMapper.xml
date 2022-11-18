@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.labshigh.realestate.internal.api.exchange.mapper.ExchangeMapper">
+  <select id="get" resultType="com.labshigh.realestate.internal.api.exchange.dao.ExchangeDao">
+    SELECT uid,
+           created_at,
+           updated_at,
+           deleted_flag,
+           used_flag,
+           `code`,
+           currency_code,
+           currency_name,
+           country,
+           `name`,
+           `date`,
+           `time`,
+           recurrence_count,
+           base_price,
+           opening_price,
+           high_price,
+           low_price,
+           `change`,
+           change_price,
+           cash_buying_price,
+           cash_selling_price,
+           tt_buying_price,
+           tt_selling_price,
+           tc_buying_price,
+           fc_selling_price,
+           exchange_commission,
+           us_dollar_rate,
+           high52w_price,
+           high52w_date,
+           low52w_price,
+           low52w_date,
+           currency_unit,
+           provider,
+           signed_change_price,
+           signed_change_rate,
+           change_rate
+    FROM exchange
+    WHERE deleted_flag = false AND
+          used_flag = true AND
+          code = #{name}
+  </select>
+</mapper>
