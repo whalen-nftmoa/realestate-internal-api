@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.labshigh.realestate.internal.api.item.mapper.MarketItemMapper">
+  <insert id="insert" keyProperty="uid" parameterType="com.labshigh.realestate.internal.api.item.dao.MarketItemDao" useGeneratedKeys="true">
+    INSERT INTO realestate.market_item (item_uid, quantity, current_quantity, start_at, end_at, price, transaction_hash)
+    VALUES(#{itemUid}, #{quantity}, #{currentQuantity}, #{startAt}, #{endAt}, #{price} ,#{transactionHash})
+  </insert>
+
+</mapper>

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.labshigh.realestate.internal.api.item.mapper.ItemFileMapper">
+  <insert id="insert" keyProperty="uid" parameterType="com.labshigh.realestate.internal.api.item.dao.ItemDao" useGeneratedKeys="true">
+    INSERT INTO realestate.item_file(category_id, item_uid, file_uri)
+    VALUES(#{categoryId}, #{itemUid}, #{fileUri})
+  </insert>
+
+
+
+</mapper>
