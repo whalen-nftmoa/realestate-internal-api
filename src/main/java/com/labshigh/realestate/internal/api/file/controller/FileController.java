@@ -13,7 +13,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -26,8 +25,8 @@ public class FileController {
   private FileService fileService;
 
   @ApiOperation("Item 이미지 업로드")
-  @PostMapping(value = "/", produces = {Constants.RESPONSE_CONTENT_TYPE})
-  public ResponseEntity<String> upload(@RequestBody FileUploadRequestModel fileUploadRequestModel,
+  @PostMapping(value = "", produces = {Constants.RESPONSE_CONTENT_TYPE})
+  public ResponseEntity<String> upload(FileUploadRequestModel fileUploadRequestModel,
       BindingResult bindingResult) {
     ResponseModel responseModel = new ResponseModel();
 

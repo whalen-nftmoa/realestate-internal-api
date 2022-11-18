@@ -31,7 +31,7 @@ public class ItemController {
   private ItemService itemService;
 
   @ApiOperation("Item 등록")
-  @PostMapping(value = "/", produces = {Constants.RESPONSE_CONTENT_TYPE})
+  @PostMapping(value = "", produces = {Constants.RESPONSE_CONTENT_TYPE})
   public ResponseEntity<String> insert(@RequestBody ItemInsertRequestModel itemInsertRequestModel,
       BindingResult bindingResult) {
     ResponseModel responseModel = new ResponseModel();
@@ -57,8 +57,8 @@ public class ItemController {
     return responseModel.toResponse();
   }
 
-  @ApiOperation("Item 등록")
-  @PostMapping(value = "/MarketItem", produces = {Constants.RESPONSE_CONTENT_TYPE})
+  @ApiOperation("Item 판매 정보 등록")
+  @PostMapping(value = "/marketItem", produces = {Constants.RESPONSE_CONTENT_TYPE})
   public ResponseEntity<String> insertMarketItem(
       @RequestBody MarketItemInsertRequestModel marketItemInsertRequestModel,
       BindingResult bindingResult) {
@@ -72,7 +72,7 @@ public class ItemController {
       responseModel.setMessage(bindingResult.getAllErrors().get(0).getDefaultMessage());
     } else {
       try {
-        itemService.insertMarketItem(marketItemInsertRequestModel);
+        responseModel.setData(itemService.insertMarketItem(marketItemInsertRequestModel));
       } catch (ServiceException e) {
         responseModel.setStatus(HttpStatus.PRECONDITION_FAILED.value());
         responseModel.setMessage(e.getMessage());

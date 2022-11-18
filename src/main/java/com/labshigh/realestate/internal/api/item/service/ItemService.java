@@ -97,12 +97,13 @@ public class ItemService {
         .scale(requestModel.getScale())
         .purpose(requestModel.getPurpose())
         .companyName(requestModel.getCompanyName())
-        .approvalAt(requestModel.getApprovalAt())
+        .approvalAt(requestModel.getApprovalAt().atTime(0, 0, 0))
         .websiteUri(requestModel.getWebsiteUri())
         .detail(requestModel.getDetail())
         .build();
 
-    String pathName = requestModel.getImageUri().split("/")[2];
+    String pathName = requestModel.getImageUri()
+        .replace("https://" + s3EndPoint + "/" + s3NftBucket, "").split("/")[2];
     //metadata.Json 업로드
     String tokenUri = fileUploadUtils.uploadByObject(dao, pathName, FileType.nft);
 
@@ -126,11 +127,15 @@ public class ItemService {
   }
 
   @Transactional
-  public void insertMarketItem(MarketItemInsertRequestModel requestModel) {
+  public MarketItemDao insertMarketItem(MarketItemInsertRequestModel requestModel) {
 
     ItemDao dao = itemMapper.detail(ItemDao.builder().uid(requestModel.getItemUid()).build());
 
-    marketItemMapper.insert(MarketItemDao.builder()
+    if (dao == null) {
+      throw new ServiceException(Constants.MSG_NO_DATA);
+    }
+
+    MarketItemDao marketItemDao = MarketItemDao.builder()
         .itemUid(dao.getUid())
         .quantity(dao.getQuantity())
         .currentQuantity(dao.getQuantity())
@@ -138,7 +143,10 @@ public class ItemService {
         .endAt(requestModel.getEndAt().atTime(23, 59, 59))
         .price(requestModel.getPrice())
         .transactionHash(requestModel.getTransactionHash())
-        .build());
+        .build();
+
+    marketItemMapper.insert(marketItemDao);
+    return marketItemDao;
   }
 
 

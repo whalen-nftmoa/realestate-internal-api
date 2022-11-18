@@ -3,8 +3,8 @@
   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.labshigh.realestate.internal.api.item.mapper.ItemFileMapper">
   <insert id="insert" keyProperty="uid" parameterType="com.labshigh.realestate.internal.api.item.dao.ItemDao" useGeneratedKeys="true">
-    INSERT INTO realestate.item_file(category_id, item_uid, file_uri)
-    VALUES(#{categoryId}, #{itemUid}, #{fileUri})
+    INSERT INTO realestate.item_file(category_uid, item_uid, file_uri)
+    VALUES(#{categoryUid}, #{itemUid}, #{fileUri})
   </insert>
 
 

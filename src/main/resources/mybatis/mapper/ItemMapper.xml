@@ -3,7 +3,7 @@
   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.labshigh.realestate.internal.api.item.mapper.ItemMapper">
   <insert id="insert" keyProperty="uid" parameterType="com.labshigh.realestate.internal.api.item.dao.ItemDao" useGeneratedKeys="true">
-    INSERT INTO realestate.item(member_uid, allocation_uid, status_uid, image_uri, project_name, total_price, quantity, current_quantity, allocation_day, right, location, core_value, area, scale, purpose, company_name, approval_at, website_uri, detail, token_uri)
+    INSERT INTO realestate.item(member_uid, allocation_uid, status_uid, image_uri, project_name, total_price, quantity, current_quantity, allocation_day, `right`, location, core_value, area, `scale`, purpose, company_name, approval_at, website_uri, detail, token_uri)
     values(#{memberUid}, #{allocationUid}, #{statusUid}, #{imageUri}, #{projectName},  #{totalPrice}, #{quantity}, #{currentQuantity}, #{allocationDay}, #{right}, #{location}, #{coreValue}, #{area}, #{scale}, #{purpose}, #{companyName}, #{approvalAt}, #{websiteUri}, #{detail},#{tokenUri})
   </insert>
 
@@ -58,43 +58,41 @@
   </select>
 
   <select id="detail" resultType="com.labshigh.realestate.internal.api.item.dao.ItemDao">
-    SELECT 	uid ,
-            created_at ,
-            updated_at ,
-            deleted_flag ,
-            used_flag ,
-            member_uid ,
-            allocation_uid ,
+    SELECT 	i.uid ,
+            i.created_at ,
+            i.updated_at ,
+            i.deleted_flag ,
+            i.used_flag ,
+            i.member_uid ,
+            i.allocation_uid ,
             acc.name  AS allocation_name,
-            status_uid ,
+            i.status_uid ,
             scc.name  AS status_name,
-            image_uri ,
-            project_name,
-            total_price,
-            quantity,
-            current_quantity,
-            sell_start_at,
-            sell_end_at,
-            allocation_day,
-            `right`,
-            location,
-            core_value,
-            area,
-            scale,
-            purpose,
-            company_name,
-            approval_at,
-            website_uri,
-            detail,
-            token_uri
+            i.image_uri ,
+            i.project_name,
+            i.total_price,
+            i.quantity,
+            i.current_quantity,
+            i.allocation_day,
+            i.`right`,
+            i.location,
+            i.core_value,
+            i.area,
+            i.`scale`,
+            i.purpose,
+            i.company_name,
+            i.approval_at,
+            i.website_uri,
+            i.detail,
+            i.token_uri
     FROM item AS i
            LEFT OUTER JOIN common_code AS acc
                            ON i.allocation_uid = acc.uid AND acc.deleted_flag = false AND acc.used_flag = true
            LEFT OUTER JOIN common_code AS scc
                            ON i.status_uid  = scc.uid AND scc.deleted_flag = false AND scc.used_flag = true
-    WHERE deleted_flag = false AND
-      used_flag = true AND
-      uid = #{uid}
+    WHERE i.deleted_flag = false AND
+      i.used_flag = true AND
+      i.uid = #{uid}
   </select>
 
   <select id="fileList" resultType="com.labshigh.realestate.internal.api.item.dao.ItemFileDao">

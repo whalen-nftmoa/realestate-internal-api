@@ -34,7 +34,6 @@ public class Constants {
   public static final String MSG_DUPLICATED_DATA = "이미 중복된 데이터가 존재합니다.";
   public static final String MSG_REQUIRE_FIELD_ERROR = "%s 필드의 값을 입력해 주세요.";
 
-  public static final String MSG_REQUIRE_FIELD_ERROR = "%s 필드의 값을 입력(확인)해주세요.";
   public static final String MSG_MIN_LENGTH_FIELD_ERROR = "최소 %d자 이상 입력해야합니다.";
   public static final String MSG_MIN_LENGTH_OVER_ERROR = "최소 %d개 이상 입력해야합니다.";
   public static final String MSG_MAX_LENGTH_FIELD_ERROR = "최대 %d자까지 입력 가능합니다.";

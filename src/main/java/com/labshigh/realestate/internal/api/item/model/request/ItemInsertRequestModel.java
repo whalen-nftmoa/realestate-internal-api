@@ -1,6 +1,6 @@
 package com.labshigh.realestate.internal.api.item.model.request;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.List;
 import lombok.Getter;
 import lombok.Setter;
@@ -29,11 +29,9 @@ public class ItemInsertRequestModel {
   private String purpose;
   private String companyName;
   @DateTimeFormat(iso = ISO.DATE)
-  private LocalDateTime approvalAt;
+  private LocalDate approvalAt;
   private String websiteUri;
   private String detail;
-
-  //SELL 정보
 
 
 }
