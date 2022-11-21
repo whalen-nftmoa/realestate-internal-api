@@ -46,10 +46,10 @@ public class MarketItemService {
     if (marketItemDetailDao.getMintingStatus() != 1) {
       throw new ServiceException(Constants.MSG_MARKET_ITEM_BUY_MINTING_STATUS_ERROR);
     }
-/*
+
     if (marketItemDetailDao.getMemberUid() == requestModel.getMemberUid()) {
       throw new ServiceException(Constants.MSG_MARKET_ITEM_MY_ITEM_BUY_ERROR);
-    }*/
+    }
 
     LocalDateTime now = LocalDateTime.now();
 
