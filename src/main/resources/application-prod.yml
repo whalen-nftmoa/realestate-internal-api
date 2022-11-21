@@ -37,8 +37,5 @@ ncloud:
   object-storage:
     end-point: kr.object.ncloudstorage.com
     region: kr-standard
-    bucket: nftmoa-upload-s3
-  nft-storage:
-    end-point: kr.object.ncloudstorage.com
-    region: kr-standard
-    bucket: nft-s3
+    bucket: realestate-s3
+
