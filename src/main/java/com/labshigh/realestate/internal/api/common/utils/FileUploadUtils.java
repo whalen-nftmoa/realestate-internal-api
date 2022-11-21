@@ -34,11 +34,11 @@ public class FileUploadUtils {
   private String ncloudAccessKey;
   @Value("${ncloud.secret-key}")
   private String ncloudSecretKey;
-  @Value("${ncloud.nft-storage.end-point}")
+  @Value("${ncloud.object-storage.end-point}")
   private String s3EndPoint;
-  @Value("${ncloud.nft-storage.region}")
+  @Value("${ncloud.object-storage.region}")
   private String s3Region;
-  @Value("${ncloud.nft-storage.bucket}")
+  @Value("${ncloud.object-storage.bucket}")
   private String s3NftBucket;
 
   public String uploadPhoto(MultipartFile file, FileType fileType, Long commonCodeUid)

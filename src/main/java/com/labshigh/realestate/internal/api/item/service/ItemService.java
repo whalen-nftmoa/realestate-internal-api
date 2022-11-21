@@ -31,18 +31,11 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class ItemService {
 
-  @Value("${ncloud.access-key}")
-  private String ncloudAccessKey;
-  @Value("${ncloud.secret-key}")
-  private String ncloudSecretKey;
-  @Value("${ncloud.nft-storage.end-point}")
+  @Value("${ncloud.object-storage.end-point}")
   private String s3EndPoint;
-  @Value("${ncloud.nft-storage.region}")
-  private String s3Region;
-  @Value("${ncloud.nft-storage.bucket}")
-  private String s3NftBucket;
   @Value("${ncloud.object-storage.bucket}")
-  private String s3Bucket;
+  private String s3NftBucket;
+
 
   @Autowired
   private ItemMapper itemMapper;
