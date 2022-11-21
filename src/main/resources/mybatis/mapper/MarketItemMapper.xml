@@ -93,18 +93,24 @@
             mi.start_at,
             mi.end_at,
             mi.price,
+            mi.price / usd.base_price AS usd_price,
+            mi.price / usd.base_price AS usdt_price,
             mi.transaction_hash,
             mi.sell_id,
             mi.nft_id,
             mi.minting_status,
             i.member_uid ,
             i.allocation_uid ,
-            acc.name  AS allocation_name,
+            acc.name AS allocation_name,
             i.status_uid ,
-            scc.name  AS status_name,
+            scc.name AS status_name,
             i.image_uri ,
             i.project_name,
             i.total_price,
+            i.total_price / usd.base_price AS usd_total_price,
+            i.total_price / usd.base_price AS usdt_total_price,
+            i.quantity,
+            i.current_quantity,
             i.allocation_day,
             i.`right`,
             i.location,
@@ -121,13 +127,35 @@
     FROM realestate.market_item AS mi
            LEFT OUTER JOIN realestate.item AS i ON mi.item_uid = i.uid AND i.deleted_flag = false AND i.used_flag = true
            LEFT OUTER JOIN realestate.`member` m ON i.member_uid = m.uid AND m.deleted_flag = false AND m.used_flag = true
+           LEFT OUTER JOIN realestate.exchange usd ON usd.code = 'FRX.KRWUSD' AND usd.deleted_flag = false AND usd.used_flag = true
            LEFT OUTER JOIN common_code AS acc
                            ON i.allocation_uid = acc.uid AND acc.deleted_flag = false AND acc.used_flag = true
            LEFT OUTER JOIN common_code AS scc
                            ON i.status_uid  = scc.uid AND scc.deleted_flag = false AND scc.used_flag = true
     WHERE 	mi.deleted_flag = false AND
-            mi.used_flag = true AND
-            mi.uid = #{uid}
+      mi.used_flag = true AND
+      mi.minting_status = 1 AND
+      mi.current_quantity > 0 AND
+      NOW() BETWEEN mi.start_at AND mi.end_at AND
+      mi.uid = #{uid}
+  </select>
+
+
+  <select id="listFile" resultType="com.labshigh.realestate.internal.api.marketItem.dao.ItemFileDao">
+    SELECT 	if.uid,
+            if.created_at,
+            if.updated_at,
+            if.deleted_flag,
+            if.used_flag,
+            if.category_uid,
+            if.item_uid,
+            if.file_uri
+    FROM	realestate.item_file AS if
+            LEFT OUTER JOIN LEFT OUTER JOIN common_code AS cc
+    ON if.category_uid  = cc.uid AND cc.deleted_flag = false AND cc.used_flag = true
+    WHERE	if.used_flag = true AND
+      if.deleted_flag = false AND
+      if.item_uid = #{itemUid}
   </select>
 
   <update id="updateCurrentQuantity">

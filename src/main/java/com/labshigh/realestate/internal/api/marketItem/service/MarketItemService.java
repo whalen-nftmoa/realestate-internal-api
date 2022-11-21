@@ -11,6 +11,7 @@ import com.labshigh.realestate.internal.api.marketItem.dao.MarketItemDetailDao;
 import com.labshigh.realestate.internal.api.marketItem.mapper.ItemBuyMapper;
 import com.labshigh.realestate.internal.api.marketItem.mapper.MarketItemMapper;
 import com.labshigh.realestate.internal.api.marketItem.model.request.ItemBuyInsertRequestModel;
+import com.labshigh.realestate.internal.api.marketItem.model.request.MarketItemDetailRequestModel;
 import com.labshigh.realestate.internal.api.marketItem.model.request.MarketItemListRequestModel;
 import com.labshigh.realestate.internal.api.marketItem.model.response.ItemBuyResponseModel;
 import com.labshigh.realestate.internal.api.marketItem.model.response.MarketItemListResponseModel;
@@ -115,6 +116,9 @@ public class MarketItemService {
     responseListModel.setList(responseModelList);
 
     return responseListModel;
+  }
+
+  private void detailMarketItem(MarketItemDetailRequestModel requestModel) {
 
   }
 
