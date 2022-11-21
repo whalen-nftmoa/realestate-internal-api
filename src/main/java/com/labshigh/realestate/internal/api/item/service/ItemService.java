@@ -120,10 +120,7 @@ public class ItemService {
           .build()
       );
     }
-
     return convertItemDetailResponseModel(dao);
-
-
   }
 
   @Transactional

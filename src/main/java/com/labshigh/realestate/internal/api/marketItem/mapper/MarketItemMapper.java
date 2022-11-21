@@ -11,5 +11,7 @@ public interface MarketItemMapper {
 
   void insert(MarketItemDao dao);
 
+  void updateCurrentQuantity(MarketItemDao dao);
+
   MarketItemDetailDao detail(MarketItemDao dao);
 }

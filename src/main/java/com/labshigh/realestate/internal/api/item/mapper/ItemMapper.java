@@ -12,6 +12,8 @@ public interface ItemMapper {
 
   void insert(ItemDao dao);
 
+  void insertBuyItem(ItemDao dao);
+
   ItemDao detail(ItemDao dao);
 
   int count(ItemListRequestModel itemListRequestModel);

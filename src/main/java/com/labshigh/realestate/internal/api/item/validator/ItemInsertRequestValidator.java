@@ -45,16 +45,16 @@ public class ItemInsertRequestValidator implements Validator {
       errors.reject("totalPrice.required",
           String.format(Constants.MSG_REQUIRE_FIELD_ERROR, "totalPrice"));
     }
-    String imageUri = requestModel.getImageUri();
-
-    if (StringUtils.isEmpty(imageUri)) {
-      errors.reject("imageUri.required",
-          String.format(Constants.MSG_REQUIRE_FIELD_ERROR, "imageUri"));
-    }
-
-    if (!StringUtils.isEmpty(imageUri) && !(imageUri.startsWith("https://") || imageUri.startsWith(
-        "http://"))) {
-      errors.reject("imageUri.validate", Constants.MSG_WRONG_URL);
-    }
+//    String imageUri = requestModel.getImageUri();
+//
+//    if (StringUtils.isEmpty(imageUri)) {
+//      errors.reject("imageUri.required",
+//          String.format(Constants.MSG_REQUIRE_FIELD_ERROR, "imageUri"));
+//    }
+//
+//    if (!StringUtils.isEmpty(imageUri) && !(imageUri.startsWith("https://") || imageUri.startsWith(
+//        "http://"))) {
+//      errors.reject("imageUri.validate", Constants.MSG_WRONG_URL);
+//    }
   }
 }

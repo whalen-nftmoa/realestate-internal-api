@@ -55,4 +55,10 @@
             mi.uid = #{uid}
   </select>
 
+  <update id="updateCurrentQuantity">
+    UPDATE realestate.market_item
+    SET current_quantity = current_quantity - #{currentQuantity}
+    WHERE uid = #{uid}
+  </update>
+
 </mapper>

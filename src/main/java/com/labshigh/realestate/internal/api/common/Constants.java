@@ -105,6 +105,11 @@ public class Constants {
   public static final String MSG_ITEM_MEMBER_ERROR = "본인이 생성 한 아이템만 판매가 가능합니다.";
   public static final String MSG_ITEM_BUY_CURRENT_QUANTITY_ERROR = "판매 수량보다 구매하려는 수량이 많을 수 없습니다.";
 
+  //Market Item
+  public static final String MSG_MARKET_ITEM_BUY_MINTING_STATUS_ERROR = "민팅되지 않은 아이템입니다..";
+  public static final String MSG_MARKET_ITEM_MY_ITEM_BUY_ERROR = "본인이 생성 한 아이템은 구매가 불가능합니다.";
+  public static final String MSG_MARKET_ITEM_END_DATE_BUY_ERROR = "판매가 마감 된 아이템은 구매가 불가능합니다.";
+
   private Constants() {
     throw new IllegalStateException("Constants Class");
   }

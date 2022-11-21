@@ -20,10 +20,6 @@ public class ItemBuyInsertRequestValidator implements Validator {
   public void validate(Object target, Errors errors) {
     ItemBuyInsertRequestModel requestModel = (ItemBuyInsertRequestModel) target;
 
-    if (requestModel.getItemUid() < 1) {
-      errors.reject("itemUid.required",
-          String.format(Constants.MSG_REQUIRE_FIELD_ERROR, "itemUid"));
-    }
     if (requestModel.getMarketItemUid() < 1) {
       errors.reject("marketItemUid.required",
           String.format(Constants.MSG_REQUIRE_FIELD_ERROR, "marketItemUid"));
