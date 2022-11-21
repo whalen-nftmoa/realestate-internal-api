@@ -6,6 +6,81 @@
     INSERT INTO realestate.market_item (item_uid, quantity, current_quantity, start_at, end_at, price, transaction_hash)
     VALUES(#{itemUid}, #{quantity}, #{currentQuantity}, #{startAt}, #{endAt}, #{price} ,#{transactionHash})
   </insert>
+  <select id="countMarketItem" resultType="int">
+    SELECT 	COUNT(*)
+    FROM realestate.market_item AS mi
+           LEFT OUTER JOIN realestate.item AS i ON mi.item_uid = i.uid AND i.deleted_flag = false AND i.used_flag = true
+           LEFT OUTER JOIN realestate.`member` m ON i.member_uid = m.uid AND m.deleted_flag = false AND m.used_flag = true
+           LEFT OUTER JOIN realestate.exchange usd ON usd.code = 'FRX.KRWUSD' AND usd.deleted_flag = false AND usd.used_flag = true
+           LEFT OUTER JOIN common_code AS acc
+                           ON i.allocation_uid = acc.uid AND acc.deleted_flag = false AND acc.used_flag = true
+           LEFT OUTER JOIN common_code AS scc
+                           ON i.status_uid  = scc.uid AND scc.deleted_flag = false AND scc.used_flag = true
+    WHERE 	mi.deleted_flag = false AND
+      mi.used_flag = true AND
+      mi.minting_status = 1 AND
+      mi.current_quantity > 0 AND
+      NOW() BETWEEN mi.start_at AND mi.end_at
+  </select>
+  <select id="listMarketItem" resultType="com.labshigh.realestate.internal.api.marketItem.dao.MarketItemDetailDao">
+    SELECT 	mi.uid,
+            mi.created_at,
+            mi.updated_at,
+            mi.deleted_flag,
+            mi.used_flag,
+            mi.item_uid,
+            mi.quantity,
+            mi.current_quantity,
+            mi.start_at,
+            mi.end_at,
+            mi.price,
+            mi.price / usd.base_price AS usd_price,
+            mi.price / usd.base_price AS usdt_price,
+            mi.transaction_hash,
+            mi.sell_id,
+            mi.nft_id,
+            mi.minting_status,
+            i.member_uid ,
+            i.allocation_uid ,
+            acc.name AS allocation_name,
+            i.status_uid ,
+            scc.name AS status_name,
+            i.image_uri ,
+            i.project_name,
+            i.total_price,
+            i.total_price / usd.base_price AS usd_total_price,
+            i.total_price / usd.base_price AS usdt_total_price,
+            i.quantity,
+            i.current_quantity,
+            i.allocation_day,
+            i.`right`,
+            i.location,
+            i.core_value,
+            i.area,
+            i.`scale`,
+            i.purpose,
+            i.company_name,
+            i.approval_at,
+            i.website_uri,
+            i.detail,
+            i.token_uri,
+            m.wallet_address
+
+    FROM realestate.market_item AS mi
+           LEFT OUTER JOIN realestate.item AS i ON mi.item_uid = i.uid AND i.deleted_flag = false AND i.used_flag = true
+           LEFT OUTER JOIN realestate.`member` m ON i.member_uid = m.uid AND m.deleted_flag = false AND m.used_flag = true
+           LEFT OUTER JOIN realestate.exchange usd ON usd.code = 'FRX.KRWUSD' AND usd.deleted_flag = false AND usd.used_flag = true
+           LEFT OUTER JOIN common_code AS acc
+                           ON i.allocation_uid = acc.uid AND acc.deleted_flag = false AND acc.used_flag = true
+           LEFT OUTER JOIN common_code AS scc
+                           ON i.status_uid  = scc.uid AND scc.deleted_flag = false AND scc.used_flag = true
+    WHERE 	mi.deleted_flag = false AND
+      mi.used_flag = true AND
+      mi.minting_status = 1 AND
+      mi.current_quantity > 0 AND
+      NOW() BETWEEN mi.start_at AND mi.end_at
+    LIMIT #{request.offsetAndRowCount.offset}, #{request.offsetAndRowCount.rowCount}
+  </select>
   <select id="detail" resultType="com.labshigh.realestate.internal.api.marketItem.dao.MarketItemDetailDao">
     SELECT 	mi.uid,
             mi.created_at,
