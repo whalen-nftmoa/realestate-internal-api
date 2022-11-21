@@ -1,9 +1,9 @@
 plugins {
-	id 'org.springframework.boot' version '2.5.11'
-	id 'io.spring.dependency-management' version '1.0.11.RELEASE'
-	id "ua.eshepelyuk.ManifestClasspath" version "1.0.0"
-	id 'java'
-	id 'war'
+    id 'org.springframework.boot' version '2.5.11'
+    id 'io.spring.dependency-management' version '1.0.11.RELEASE'
+    id "ua.eshepelyuk.ManifestClasspath" version "1.0.0"
+    id 'java'
+    id 'war'
 }
 
 def buildNumber = System.getenv('BUILD_NUMBER')
@@ -14,90 +14,89 @@ version = "1.0.0.${jenkinsBuild}"
 sourceCompatibility = '1.8'
 
 repositories {
-	mavenCentral()
+    mavenCentral()
 }
 
 dependencies {
-	implementation 'junit:junit:4.13.2'
+    implementation 'junit:junit:4.13.2'
 
-	// web3
-	implementation group: 'org.web3j', name: 'core', version: '5.0.0'
+    // web3
+    implementation group: 'org.web3j', name: 'core', version: '5.0.0'
 
-	// spring
-	implementation 'org.springframework.security:spring-security-crypto'
-	implementation 'org.springframework.boot:spring-boot-starter'
-	implementation 'org.springframework.boot:spring-boot-starter-actuator'
-	implementation 'org.springframework.boot:spring-boot-starter-web'
-	implementation 'org.springframework.boot:spring-boot-starter-webflux'
-	implementation 'org.apache.commons:commons-collections4:4.4'
+    // spring
+    implementation 'org.springframework.boot:spring-boot-starter'
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-webflux'
+    implementation 'org.springframework.security:spring-security-crypto'
 
-	// aws sdk
-	implementation platform('com.amazonaws:aws-java-sdk-bom:1.11.238')
-	implementation 'com.amazonaws:aws-java-sdk-s3'
+    // aws sdk
+    implementation platform('com.amazonaws:aws-java-sdk-bom:1.11.238')
+    implementation 'com.amazonaws:aws-java-sdk-s3'
 
-	// json
-	implementation 'com.google.code.gson:gson:2.8.9'
+    // json
+    implementation 'com.google.code.gson:gson:2.8.9'
 
-	// apache common lang3
-	implementation 'org.apache.commons:commons-lang3:3.0'
+    // apache common lang3
+    implementation 'org.apache.commons:commons-collections4:4.4'
+    implementation 'org.apache.commons:commons-lang3:3.0'
 
-	// swagger
-	implementation 'io.springfox:springfox-swagger2:2.9.2'
-	implementation 'io.springfox:springfox-swagger-ui:2.9.2'
+    // swagger
+    implementation 'io.springfox:springfox-swagger2:2.9.2'
+    implementation 'io.springfox:springfox-swagger-ui:2.9.2'
 
-	// mybatis
-	implementation 'org.mybatis.spring.boot:mybatis-spring-boot-starter:1.3.2'
-	implementation 'org.jetbrains:annotations:20.1.0'
-	implementation 'org.jetbrains:annotations:20.1.0'
+    // mybatis
+    implementation 'org.mybatis.spring.boot:mybatis-spring-boot-starter:1.3.2'
+    implementation 'org.jetbrains:annotations:20.1.0'
 
-	runtimeOnly 'mysql:mysql-connector-java'
+    runtimeOnly 'mysql:mysql-connector-java'
 
-	// lombok
-	implementation 'org.projectlombok:lombok'
-	compileOnly 'org.projectlombok:lombok'
-	annotationProcessor 'org.projectlombok:lombok'
+    // lombok
+    implementation 'org.projectlombok:lombok'
+    compileOnly 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok'
 
-	testImplementation 'org.projectlombok:lombok'
-	testCompileOnly 'org.projectlombok:lombok'
-	testAnnotationProcessor 'org.projectlombok:lombok'
+    testImplementation 'org.projectlombok:lombok'
+    testCompileOnly 'org.projectlombok:lombok'
+    testAnnotationProcessor 'org.projectlombok:lombok'
 
-	testImplementation 'org.awaitility:awaitility:4.1.1'
-	testImplementation('org.springframework.boot:spring-boot-starter-test') {
-		exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
-	}
+    testImplementation 'org.awaitility:awaitility:4.1.1'
+    testImplementation('org.springframework.boot:spring-boot-starter-test') {
+        exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
+    }
 }
 
 task projectVersion {
-	doLast {
-		println "${project.version}"
-	}
+    doLast {
+        println "${project.version}"
+    }
 }
 
 task jarName {
-	doLast {
-		println "${archivesBaseName}-${version}.jar"
-	}
+    doLast {
+        println "${archivesBaseName}-${version}.jar"
+    }
 }
 
 bootJar {
-	archivesBaseName = "realestate-internal-api"
+    archivesBaseName = "realestate-internal-api"
 
-	manifest {
-		attributes 'Implementation-Title': 'Gradle Quickstart',
-				'Implementation-Version': getArchiveVersion()
-	}
+    manifest {
+        attributes 'Implementation-Title': 'Gradle Quickstart',
+                'Implementation-Version': getArchiveVersion()
+    }
 }
 
 war {
-	enabled = true
-	archivesBaseName = "realestate-internal-api"
+    enabled = true
+    archivesBaseName = "realestate-internal-api"
 
-	manifest {
-		attributes 'Implementation-Title': 'Gradle Quickstart',
-				'Implementation-Version': getArchiveVersion()
-	}
+    manifest {
+        attributes 'Implementation-Title': 'Gradle Quickstart',
+                'Implementation-Version': getArchiveVersion()
+    }
 }
 
 test {
-	useJUnitPlatform()
+    useJUnitPlatform()
 }
