@@ -7,6 +7,21 @@
     VALUES(#{categoryUid}, #{itemUid}, #{fileUri})
   </insert>
 
+  <select id="listFile" resultType="com.labshigh.realestate.internal.api.item.dao.ItemFileDao">
+    SELECT 	i.uid,
+            i.created_at,
+            i.updated_at,
+            i.deleted_flag,
+            i.used_flag,
+            i.category_uid,
+            i.item_uid,
+            i.file_uri
+    FROM	realestate.item_file AS i
+    WHERE	i.used_flag = true AND
+      i.deleted_flag = false AND
+      i.item_uid = #{itemUid}
+  </select>
+
 
 
 </mapper>

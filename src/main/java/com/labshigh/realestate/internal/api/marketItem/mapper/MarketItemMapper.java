@@ -1,6 +1,5 @@
 package com.labshigh.realestate.internal.api.marketItem.mapper;
 
-import com.labshigh.realestate.internal.api.marketItem.dao.ItemFileDao;
 import com.labshigh.realestate.internal.api.marketItem.dao.MarketItemDao;
 import com.labshigh.realestate.internal.api.marketItem.dao.MarketItemDetailDao;
 import com.labshigh.realestate.internal.api.marketItem.model.request.MarketItemListRequestModel;
@@ -24,5 +23,5 @@ public interface MarketItemMapper {
 
   MarketItemDetailDao detail(MarketItemDao dao);
 
-  List<ItemFileDao> listFile(ItemFileDao dao);
+
 }

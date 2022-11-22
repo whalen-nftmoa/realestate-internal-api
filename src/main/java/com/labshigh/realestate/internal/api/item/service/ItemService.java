@@ -6,6 +6,7 @@ import com.labshigh.realestate.internal.api.common.exceptions.ServiceException;
 import com.labshigh.realestate.internal.api.common.utils.FileUploadUtils;
 import com.labshigh.realestate.internal.api.common.utils.enums.FileType;
 import com.labshigh.realestate.internal.api.item.dao.ItemDao;
+import com.labshigh.realestate.internal.api.item.dao.ItemFileDao;
 import com.labshigh.realestate.internal.api.item.mapper.ItemFileMapper;
 import com.labshigh.realestate.internal.api.item.mapper.ItemMapper;
 import com.labshigh.realestate.internal.api.item.model.request.ItemFileInsertRequestModel;

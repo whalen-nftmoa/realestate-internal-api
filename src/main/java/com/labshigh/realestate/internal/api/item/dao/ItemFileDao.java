@@ -1,4 +1,4 @@
-package com.labshigh.realestate.internal.api.marketItem.dao;
+package com.labshigh.realestate.internal.api.item.dao;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.labshigh.realestate.internal.api.common.Constants;

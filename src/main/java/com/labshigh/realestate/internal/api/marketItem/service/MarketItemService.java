@@ -4,6 +4,8 @@ import com.labshigh.realestate.core.models.ResponseListModel;
 import com.labshigh.realestate.internal.api.common.Constants;
 import com.labshigh.realestate.internal.api.common.exceptions.ServiceException;
 import com.labshigh.realestate.internal.api.item.dao.ItemDao;
+import com.labshigh.realestate.internal.api.item.dao.ItemFileDao;
+import com.labshigh.realestate.internal.api.item.mapper.ItemFileMapper;
 import com.labshigh.realestate.internal.api.item.mapper.ItemMapper;
 import com.labshigh.realestate.internal.api.marketItem.dao.ItemBuyDao;
 import com.labshigh.realestate.internal.api.marketItem.dao.MarketItemDao;
@@ -14,6 +16,8 @@ import com.labshigh.realestate.internal.api.marketItem.model.request.ItemBuyInse
 import com.labshigh.realestate.internal.api.marketItem.model.request.MarketItemDetailRequestModel;
 import com.labshigh.realestate.internal.api.marketItem.model.request.MarketItemListRequestModel;
 import com.labshigh.realestate.internal.api.marketItem.model.response.ItemBuyResponseModel;
+import com.labshigh.realestate.internal.api.marketItem.model.response.ItemFileResponseModel;
+import com.labshigh.realestate.internal.api.marketItem.model.response.MarketItemDetailResponseModel;
 import com.labshigh.realestate.internal.api.marketItem.model.response.MarketItemListResponseModel;
 import java.time.LocalDateTime;
 import java.util.Collections;
@@ -21,6 +25,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,13 +33,19 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class MarketItemService {
 
+  @Value("${ncloud.object-storage.end-point}")
+  private String s3EndPoint;
+  @Value("${ncloud.object-storage.bucket}")
+  private String s3NftBucket;
+
   @Autowired
   private MarketItemMapper marketItemMapper;
   @Autowired
   private ItemMapper itemMapper;
-
   @Autowired
   private ItemBuyMapper itemBuyMapper;
+  @Autowired
+  private ItemFileMapper itemFileMapper;
 
   @Transactional
   public ItemBuyResponseModel insertItemBuy(ItemBuyInsertRequestModel requestModel) {
@@ -118,8 +129,81 @@ public class MarketItemService {
     return responseListModel;
   }
 
-  private void detailMarketItem(MarketItemDetailRequestModel requestModel) {
+  public MarketItemDetailResponseModel detailMarketItem(
+      MarketItemDetailRequestModel requestModel) {
+    MarketItemDetailDao dao = marketItemMapper.detail(
+        MarketItemDao.builder().uid(requestModel.getMarketItemUid()).build());
 
+    MarketItemDetailResponseModel responseModel = convertMarketItemDetailResponseModel(dao);
+
+    List<ItemFileDao> fileDaoList = itemFileMapper.listFile(
+        ItemFileDao.builder().itemUid(responseModel.getItemUid()).build());
+
+    responseModel.setFileList(
+        fileDaoList.stream().map(this::convertItemFileResponseModel).collect(Collectors.toList())
+    );
+    return responseModel;
+  }
+
+  private ItemFileResponseModel convertItemFileResponseModel(ItemFileDao dao) {
+    return ItemFileResponseModel.builder()
+        .uid(dao.getUid())
+        .createdAt(dao.getCreatedAt())
+        .updatedAt(dao.getUpdatedAt())
+        .deletedFlag(dao.isDeletedFlag())
+        .usedFlag(dao.getUsedFlag())
+        .categoryUid(dao.getCategoryUid())
+        .itemUid(dao.getItemUid())
+        .fileUri("https://" + s3EndPoint + "/" + s3NftBucket + dao.getFileUri())
+        .build();
+  }
+
+  private MarketItemDetailResponseModel convertMarketItemDetailResponseModel(
+      MarketItemDetailDao dao) {
+
+    if (dao == null) {
+      throw new ServiceException(Constants.MSG_NO_DATA);
+    }
+
+    return MarketItemDetailResponseModel.builder()
+        .uid(dao.getUid())
+        .createdAt(dao.getCreatedAt())
+        .updatedAt(dao.getUpdatedAt())
+        .deletedFlag(dao.isDeletedFlag())
+        .usedFlag(dao.getUsedFlag())
+        .itemUid(dao.getItemUid())
+        .quantity(dao.getQuantity())
+        .currentQuantity(dao.getCurrentQuantity())
+        .startAt(dao.getStartAt())
+        .endAt(dao.getEndAt())
+        .price(dao.getPrice())
+        .usdPrice(dao.getUsdPrice())
+        .usdtPrice(dao.getUsdtPrice())
+        .transactionHash(dao.getTransactionHash())
+        .sellId(dao.getSellId())
+        .nftId(dao.getNftId())
+        .mintingStatus(dao.getMintingStatus())
+        .memberUid(dao.getMemberUid())
+        .allocationUid(dao.getAllocationUid())
+        .statusUid(dao.getStatusUid())
+        .imageUri("https://" + s3EndPoint + "/" + s3NftBucket + dao.getImageUri())
+        .projectName(dao.getProjectName())
+        .totalPrice(dao.getTotalPrice())
+        .usdTotalPrice(dao.getUsdTotalPrice())
+        .usdtTotalPrice(dao.getUsdtTotalPrice())
+        .allocationDay(dao.getAllocationDay())
+        .right(dao.getRight())
+        .location(dao.getLocation())
+        .area(dao.getArea())
+        .scale(dao.getScale())
+        .purpose(dao.getPurpose())
+        .companyName(dao.getCompanyName())
+        .approvalAt(dao.getApprovalAt())
+        .websiteUri(dao.getWebsiteUri())
+        .detail(dao.getDetail())
+        .tokenUri("https://" + s3EndPoint + "/" + s3NftBucket + dao.getTokenUri())
+        .walletAddress(dao.getWalletAddress())
+        .build();
   }
 
   private MarketItemListResponseModel convertMarketItemResponseModel(MarketItemDetailDao dao) {
@@ -144,7 +228,7 @@ public class MarketItemService {
         .memberUid(dao.getMemberUid())
         .allocationUid(dao.getAllocationUid())
         .statusUid(dao.getStatusUid())
-        .imageUri(dao.getImageUri())
+        .imageUri("https://" + s3EndPoint + "/" + s3NftBucket + dao.getImageUri())
         .projectName(dao.getProjectName())
         .totalPrice(dao.getTotalPrice())
         .usdTotalPrice(dao.getUsdTotalPrice())
@@ -159,10 +243,9 @@ public class MarketItemService {
         .approvalAt(dao.getApprovalAt())
         .websiteUri(dao.getWebsiteUri())
         .detail(dao.getDetail())
-        .tokenUri(dao.getTokenUri())
+        .tokenUri("https://" + s3EndPoint + "/" + s3NftBucket + dao.getTokenUri())
         .walletAddress(dao.getWalletAddress())
         .build();
-
   }
 
   private ItemBuyResponseModel convertItemBuyResponseModel(ItemBuyDao dao) {

@@ -23,6 +23,4 @@ public class ItemFileResponseModel {
   private long categoryUid;
   private long itemUid;
   private String fileUri;
-
-
 }
