@@ -46,7 +46,7 @@
             i.status_uid ,
             scc.name AS status_name,
             i.image_uri ,
-            CONCAT(i.project_name, '#', ib.`index`) AS project_name,
+            CONCAT(i.project_name, ' #', ib.`index`) AS project_name,
             i.total_price,
             i.total_price / usd.base_price AS usd_total_price,
             i.total_price / usd.base_price / usdt.`last` AS usdt_total_price,
