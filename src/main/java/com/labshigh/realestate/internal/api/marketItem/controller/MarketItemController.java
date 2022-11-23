@@ -4,10 +4,12 @@ import com.labshigh.realestate.core.models.ResponseModel;
 import com.labshigh.realestate.internal.api.common.Constants;
 import com.labshigh.realestate.internal.api.common.exceptions.ServiceException;
 import com.labshigh.realestate.internal.api.marketItem.model.request.ItemBuyInsertRequestModel;
+import com.labshigh.realestate.internal.api.marketItem.model.request.ItemBuyListRequestModel;
 import com.labshigh.realestate.internal.api.marketItem.model.request.MarketItemDetailRequestModel;
 import com.labshigh.realestate.internal.api.marketItem.model.request.MarketItemListRequestModel;
 import com.labshigh.realestate.internal.api.marketItem.service.MarketItemService;
 import com.labshigh.realestate.internal.api.marketItem.validator.ItemBuyInsertRequestValidator;
+import com.labshigh.realestate.internal.api.marketItem.validator.ItemBuyListRequestValidator;
 import com.labshigh.realestate.internal.api.marketItem.validator.MarketItemDetailRequestValidator;
 import com.labshigh.realestate.internal.api.marketItem.validator.MarketItemListRequestValidator;
 import io.swagger.annotations.ApiOperation;
@@ -106,6 +108,34 @@ public class MarketItemController {
     } else {
       try {
         responseModel.setData(marketItemService.detailMarketItem(marketItemDetailRequestModel));
+      } catch (ServiceException e) {
+        responseModel.setStatus(HttpStatus.PRECONDITION_FAILED.value());
+        responseModel.setMessage(e.getMessage());
+      } catch (Exception e) {
+        responseModel.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
+        responseModel.setMessage(HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase());
+        responseModel.error.setErrorCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
+        responseModel.error.setErrorMessage(e.getLocalizedMessage());
+      }
+    }
+    return responseModel.toResponse();
+  }
+
+  @ApiOperation("Item Buy 리스트 조회")
+  @GetMapping(value = "/{marketItemUid}/buy", produces = {Constants.RESPONSE_CONTENT_TYPE})
+  public ResponseEntity<String> itemBuyList(ItemBuyListRequestModel itemBuyListRequestModel,
+      BindingResult bindingResult) {
+    ResponseModel responseModel = new ResponseModel();
+
+    ItemBuyListRequestValidator.builder().build()
+        .validate(itemBuyListRequestModel, bindingResult);
+
+    if (bindingResult.hasErrors()) {
+      responseModel.setStatus(HttpStatus.PRECONDITION_FAILED.value());
+      responseModel.setMessage(bindingResult.getAllErrors().get(0).getDefaultMessage());
+    } else {
+      try {
+        responseModel.setData(marketItemService.listItemBuy(itemBuyListRequestModel));
       } catch (ServiceException e) {
         responseModel.setStatus(HttpStatus.PRECONDITION_FAILED.value());
         responseModel.setMessage(e.getMessage());
