@@ -23,6 +23,11 @@ public class ItemBuyListRequestValidator implements Validator {
           String.format(Constants.MSG_REQUIRE_FIELD_ERROR, "marketItemUid"));
     }
 
+    if (itemBuyListRequestModel.getMemberUid() <= 0) {
+      errors.reject("memberUid.required",
+          String.format(Constants.MSG_REQUIRE_FIELD_ERROR, "memberUid"));
+    }
+
     if (itemBuyListRequestModel.getPage() <= 0) {
       errors.reject("page.required", String.format(Constants.MSG_REQUIRE_FIELD_ERROR, "page"));
     }

@@ -13,6 +13,8 @@ public class ItemBuyListRequestModel {
 
   @ApiModelProperty(value = "MarketItemUid")
   private long marketItemUid;
+  @ApiModelProperty(value = "memberUid")
+  private long memberUid;
 
   @ApiModelProperty(value = "페이지")
   private int page = 1;

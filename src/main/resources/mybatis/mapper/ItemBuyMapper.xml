@@ -77,7 +77,8 @@
     WHERE 	ib.deleted_flag = false AND
       ib.used_flag = true AND
       i.current_quantity > 0 AND
-      ib.market_item_uid = #{request.marketItemUid}
+      ib.market_item_uid = #{request.marketItemUid} AND
+      i.member_uid = #{request.memberUid}
       LIMIT #{request.offsetAndRowCount.offset}, #{request.offsetAndRowCount.rowCount}
   </select>
 
