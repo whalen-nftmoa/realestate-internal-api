@@ -57,5 +57,10 @@ public class ItemBuyDetailDao {
   private String detail;
   private String tokenUri;
   private String walletAddress;
+  @JsonFormat(pattern = Constants.JSONFY_DATE_FORMAT)
+  private LocalDateTime startAt;
+  @JsonFormat(pattern = Constants.JSONFY_DATE_FORMAT)
+  private LocalDateTime endAt;
+
 
 }
