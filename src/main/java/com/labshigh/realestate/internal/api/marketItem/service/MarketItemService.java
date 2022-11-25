@@ -51,7 +51,7 @@ public class MarketItemService {
   private ItemFileMapper itemFileMapper;
 
   @Transactional
-  public ItemBuyResponseModel insertItemBuy(ItemBuyInsertRequestModel requestModel) {
+  public MarketItemDetailResponseModel insertItemBuy(ItemBuyInsertRequestModel requestModel) {
     MarketItemDetailDao marketItemDetailDao = marketItemMapper.detail(MarketItemDao.builder()
         .uid(requestModel.getMarketItemUid())
         .build());
@@ -60,7 +60,7 @@ public class MarketItemService {
       throw new ServiceException(Constants.MSG_NO_DATA);
     }
 
-    if (marketItemDetailDao.getCurrentQuantity() - 1 < 0) {
+    if (marketItemDetailDao.getCurrentQuantity() - requestModel.getQuantity() < 0) {
       throw new ServiceException(Constants.MSG_ITEM_BUY_CURRENT_QUANTITY_ERROR);
     }
 
@@ -79,34 +79,42 @@ public class MarketItemService {
             || marketItemDetailDao.getEndAt().equals(now)))) {
       throw new ServiceException(Constants.MSG_MARKET_ITEM_END_DATE_BUY_ERROR);
     }
+    for (int idx = 0; idx < requestModel.getQuantity(); idx++) {
 
-    ItemDao itemDao = ItemDao.builder()
-        .uid(marketItemDetailDao.getItemUid())
-        .memberUid(requestModel.getMemberUid())
-        .quantity(requestModel.getQuantity())
-        .currentQuantity(requestModel.getCurrentQuantity())
-        .build();
+      int index =
+          marketItemDetailDao.getQuantity() - (marketItemDetailDao.getCurrentQuantity() - (idx
+              + 1));
 
-    itemMapper.insertBuyItem(itemDao);
+      ItemDao itemDao = ItemDao.builder()
+          .uid(marketItemDetailDao.getItemUid())
+          .memberUid(requestModel.getMemberUid())
+          .quantity(requestModel.getQuantity())
+          .currentQuantity(requestModel.getCurrentQuantity())
+          .itemKind(requestModel.getItemKind())
+          .index(index)
+          .build();
 
+      itemMapper.insertBuyItem(itemDao);
+
+      ItemBuyDao itemBuyDao = ItemBuyDao.builder()
+          .price(requestModel.getPrice())
+          .nftId(requestModel.getNftId())
+          .contractAddress(requestModel.getContractAddress())
+          .marketItemUid(requestModel.getMarketItemUid())
+          .itemUid(itemDao.getUid())
+          .index(index)
+          .build();
+      itemBuyMapper.insert(itemBuyDao);
+    }
     MarketItemDao marketItemDao = MarketItemDao.builder()
         .currentQuantity(requestModel.getCurrentQuantity())
         .uid(requestModel.getMarketItemUid())
         .build();
     marketItemMapper.updateCurrentQuantity(marketItemDao);
 
-    ItemBuyDao itemBuyDao = ItemBuyDao.builder()
-        .price(requestModel.getPrice())
-        .nftId(requestModel.getNftId())
-        .contractAddress(requestModel.getContractAddress())
-        .marketItemUid(requestModel.getMarketItemUid())
-        .itemUid(itemDao.getUid())
-        .index(marketItemDetailDao.getQuantity() - (marketItemDetailDao.getCurrentQuantity()
-            - requestModel.getQuantity()))
-        .build();
-    itemBuyMapper.insert(itemBuyDao);
+    //return convertItemBuyResponseModel(itemBuyDao);
 
-    return convertItemBuyResponseModel(itemBuyDao);
+    return convertMarketItemDetailResponseModel(marketItemDetailDao);
   }
 
   public ResponseListModel listItemBuy(ItemBuyListRequestModel requestModel) {
@@ -182,7 +190,7 @@ public class MarketItemService {
         .currentQuantity(dao.getCurrentQuantity())
         .price(dao.getPrice())
         .usdPrice(dao.getUsdPrice())
-        .usdtPrice(dao.getUsdtPrice())
+        .fogPrice(dao.getFogPrice())
         .contractAddress(dao.getContractAddress())
         .nftId(dao.getNftId())
         .memberUid(dao.getMemberUid())
@@ -194,7 +202,7 @@ public class MarketItemService {
         .projectName(dao.getProjectName())
         .totalPrice(dao.getTotalPrice())
         .usdTotalPrice(dao.getUsdTotalPrice())
-        .usdtTotalPrice(dao.getUsdtTotalPrice())
+        .fogTotalPrice(dao.getFogTotalPrice())
         .allocationDay(dao.getAllocationDay())
         .right(dao.getRight())
         .location(dao.getLocation())
@@ -246,7 +254,7 @@ public class MarketItemService {
         .endAt(dao.getEndAt())
         .price(dao.getPrice())
         .usdPrice(dao.getUsdPrice())
-        .usdtPrice(dao.getUsdtPrice())
+        .fogPrice(dao.getFogPrice())
         .transactionHash(dao.getTransactionHash())
         .sellId(dao.getSellId())
         .nftId(dao.getNftId())
@@ -258,7 +266,7 @@ public class MarketItemService {
         .projectName(dao.getProjectName())
         .totalPrice(dao.getTotalPrice())
         .usdTotalPrice(dao.getUsdTotalPrice())
-        .usdtTotalPrice(dao.getUsdtTotalPrice())
+        .fogTotalPrice(dao.getFogTotalPrice())
         .allocationDay(dao.getAllocationDay())
         .right(dao.getRight())
         .location(dao.getLocation())
@@ -288,7 +296,7 @@ public class MarketItemService {
         .endAt(dao.getEndAt())
         .price(dao.getPrice())
         .usdPrice(dao.getUsdPrice())
-        .usdtPrice(dao.getUsdtPrice())
+        .fogPrice(dao.getFogPrice())
         .transactionHash(dao.getTransactionHash())
         .sellId(dao.getSellId())
         .nftId(dao.getNftId())
@@ -300,7 +308,7 @@ public class MarketItemService {
         .projectName(dao.getProjectName())
         .totalPrice(dao.getTotalPrice())
         .usdTotalPrice(dao.getUsdTotalPrice())
-        .usdtTotalPrice(dao.getUsdtTotalPrice())
+        .fogTotalPrice(dao.getFogTotalPrice())
         .allocationDay(dao.getAllocationDay())
         .right(dao.getRight())
         .location(dao.getLocation())

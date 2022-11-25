@@ -30,7 +30,7 @@ public class ItemBuyDetailDao {
   private int currentQuantity;
   private String price;
   private String usdPrice;
-  private String usdtPrice;
+  private String fogPrice;
   private String contractAddress;
   private String nftId;
   private long memberUid;
@@ -42,7 +42,7 @@ public class ItemBuyDetailDao {
   private String projectName;
   private String totalPrice;
   private String usdTotalPrice;
-  private String usdtTotalPrice;
+  private String fogTotalPrice;
   private int allocationDay;
   private String right;
   private String location;

@@ -8,8 +8,8 @@
   </insert>
 
   <insert id="insertBuyItem" keyProperty="uid" parameterType="com.labshigh.realestate.internal.api.item.dao.ItemDao" useGeneratedKeys="true">
-    INSERT INTO realestate.item(member_uid, allocation_uid, status_uid, image_uri, project_name, total_price, quantity, current_quantity, allocation_day, `right`, location, core_value, area, `scale`, purpose, company_name, approval_at, website_uri, detail, token_uri)
-    SELECT #{memberUid}, i.allocation_uid, i.status_uid, i.image_uri, i.project_name, i.total_price, #{quantity}, #{currentQuantity}, i.allocation_day, i.`right`, i.location, i.core_value, i.area, i.`scale`, i.purpose, i.company_name, i.approval_at, i.website_uri, i.detail, i.token_uri
+    INSERT INTO realestate.item(member_uid, allocation_uid, status_uid, image_uri, project_name, total_price, quantity, current_quantity, allocation_day, `right`, location, core_value, area, `scale`, purpose, company_name, approval_at, website_uri, detail, token_uri, item_kind)
+    SELECT #{memberUid}, i.allocation_uid, i.status_uid, i.image_uri, CONCAT(i.project_name, ' #', #{index}), i.total_price, #{quantity}, #{currentQuantity}, i.allocation_day, i.`right`, i.location, i.core_value, i.area, i.`scale`, i.purpose, i.company_name, i.approval_at, i.website_uri, i.detail, i.token_uri, #{itemKind}
     FROM   item AS i
     WHERE i.deleted_flag = false AND
       i.used_flag = true AND

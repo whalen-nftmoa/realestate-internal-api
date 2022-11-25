@@ -47,6 +47,8 @@ public class ItemDao {
   private String websiteUri;
   private String detail;
   private String tokenUri;
+  private int itemKind;
+  private int index;
 
 
 }

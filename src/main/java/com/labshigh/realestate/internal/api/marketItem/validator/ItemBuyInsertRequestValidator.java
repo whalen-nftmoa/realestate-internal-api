@@ -25,6 +25,11 @@ public class ItemBuyInsertRequestValidator implements Validator {
           String.format(Constants.MSG_REQUIRE_FIELD_ERROR, "marketItemUid"));
     }
 
+    if (requestModel.getQuantity() < 1) {
+      errors.reject("quantity.required",
+          String.format(Constants.MSG_REQUIRE_FIELD_ERROR, "quantity"));
+    }
+
     if (StringUtils.isEmpty(requestModel.getPrice())
         || Double.parseDouble(requestModel.getPrice()) <= 0) {
       errors.reject("price.required", String.format(Constants.MSG_REQUIRE_FIELD_ERROR, "price"));

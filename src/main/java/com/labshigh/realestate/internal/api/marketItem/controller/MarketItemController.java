@@ -40,6 +40,8 @@ public class MarketItemController {
       BindingResult bindingResult) {
     ResponseModel responseModel = new ResponseModel();
 
+    itemBuyInsertRequestModel.setItemKind(2);
+
     ItemBuyInsertRequestValidator.builder().build()
         .validate(itemBuyInsertRequestModel, bindingResult);
 

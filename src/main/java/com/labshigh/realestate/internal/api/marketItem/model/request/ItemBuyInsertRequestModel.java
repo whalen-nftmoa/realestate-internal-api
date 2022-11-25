@@ -16,6 +16,7 @@ public class ItemBuyInsertRequestModel {
   private int quantity;
   private int currentQuantity;
   private int index;
+  private int itemKind;
 
 
 }

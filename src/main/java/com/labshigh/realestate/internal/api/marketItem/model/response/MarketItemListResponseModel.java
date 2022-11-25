@@ -29,7 +29,7 @@ public class MarketItemListResponseModel {
   private LocalDateTime endAt;
   private String price;
   private String usdPrice;
-  private String usdtPrice;
+  private String fogPrice;
   private String transactionHash;
   private String sellId;
   private String nftId;
@@ -44,7 +44,7 @@ public class MarketItemListResponseModel {
   private String projectName;
   private String totalPrice;
   private String usdTotalPrice;
-  private String usdtTotalPrice;
+  private String fogTotalPrice;
   private int allocationDay;
   private String right;
   private String location;
