@@ -88,8 +88,8 @@ public class MarketItemService {
       ItemDao itemDao = ItemDao.builder()
           .uid(marketItemDetailDao.getItemUid())
           .memberUid(requestModel.getMemberUid())
-          .quantity(requestModel.getQuantity())
-          .currentQuantity(requestModel.getCurrentQuantity())
+          .quantity(1)
+          .currentQuantity(1)
           .itemKind(requestModel.getItemKind())
           .index(index)
           .build();
