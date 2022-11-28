@@ -3,8 +3,10 @@ package com.labshigh.realestate.internal.api.exchange.service;
 import com.labshigh.realestate.internal.api.common.Constants;
 import com.labshigh.realestate.internal.api.common.exceptions.ServiceException;
 import com.labshigh.realestate.internal.api.exchange.dao.ExchangeDao;
+import com.labshigh.realestate.internal.api.exchange.dao.ExchangeVirtual2Dao;
 import com.labshigh.realestate.internal.api.exchange.dao.ExchangeVirtualDao;
 import com.labshigh.realestate.internal.api.exchange.mapper.ExchangeMapper;
+import com.labshigh.realestate.internal.api.exchange.mapper.ExchangeVirtual2Mapper;
 import com.labshigh.realestate.internal.api.exchange.mapper.ExchangeVirtualMapper;
 import com.labshigh.realestate.internal.api.exchange.model.request.ExchangeGetRequestModel;
 import com.labshigh.realestate.internal.api.exchange.model.request.ExchangeGetVirtualRequestModel;
@@ -19,41 +21,64 @@ public class ExchangeService {
 
   private final ExchangeMapper exchangeMapper;
   private final ExchangeVirtualMapper exchangeVirtualMapper;
+  private final ExchangeVirtual2Mapper exchangeVirtual2Mapper;
 
-  public ExchangeService(ExchangeMapper exchangeMapper,
-      ExchangeVirtualMapper exchangeVirtualMapper) {
+  public ExchangeService(ExchangeMapper exchangeMapper, ExchangeVirtualMapper exchangeVirtualMapper,
+      ExchangeVirtual2Mapper exchangeVirtual2Mapper) {
     this.exchangeMapper = exchangeMapper;
     this.exchangeVirtualMapper = exchangeVirtualMapper;
+    this.exchangeVirtual2Mapper = exchangeVirtual2Mapper;
   }
 
   public ExchangeVirtualResponseModel getVirtual(ExchangeGetVirtualRequestModel requestModel) {
 
-    ExchangeVirtualDao exchangeVirtualDao = exchangeVirtualMapper.get(ExchangeVirtualDao.builder()
-        .name(requestModel.getExchangeName())
-        .build());
+    if (requestModel.getExchangeName().equals("FOG_WON")) {
 
-    if (exchangeVirtualDao == null) {
-      throw new ServiceException(String.format(Constants.MSG_NO_DATA));
+      ExchangeVirtual2Dao exchangeVirtual2Dao = exchangeVirtual2Mapper.get(
+          ExchangeVirtual2Dao.builder().name(requestModel.getExchangeName()).build());
+
+      if (exchangeVirtual2Dao == null) {
+        throw new ServiceException(String.format(Constants.MSG_NO_DATA));
+      }
+
+      return ExchangeVirtualResponseModel.builder()
+          .uid(exchangeVirtual2Dao.getUid())
+          .createdAt(exchangeVirtual2Dao.getCreatedAt())
+          .updatedAt(exchangeVirtual2Dao.getUpdatedAt())
+          .deletedFlag(exchangeVirtual2Dao.isDeletedFlag())
+          .usedFlag(exchangeVirtual2Dao.isUsedFlag())
+          .name(requestModel.getExchangeName())
+          .last(exchangeVirtual2Dao.getPrice())
+          .build();
+    } else {
+
+      ExchangeVirtualDao exchangeVirtualDao = exchangeVirtualMapper.get(ExchangeVirtualDao.builder()
+          .name(requestModel.getExchangeName())
+          .build());
+
+      if (exchangeVirtualDao == null) {
+        throw new ServiceException(String.format(Constants.MSG_NO_DATA));
+      }
+
+      return ExchangeVirtualResponseModel.builder()
+          .uid(exchangeVirtualDao.getUid())
+          .createdAt(exchangeVirtualDao.getCreatedAt())
+          .updatedAt(exchangeVirtualDao.getUpdatedAt())
+          .deletedFlag(exchangeVirtualDao.isDeletedFlag())
+          .usedFlag(exchangeVirtualDao.isUsedFlag())
+          .name(exchangeVirtualDao.getName())
+          .last(exchangeVirtualDao.getLast())
+          .lowestAsk(exchangeVirtualDao.getLowestAsk())
+          .highestBid(exchangeVirtualDao.getHighestBid())
+          .percentChange(exchangeVirtualDao.getPercentChange())
+          .baseVolume(exchangeVirtualDao.getBaseVolume())
+          .quoteVolume(exchangeVirtualDao.getQuoteVolume())
+          .isFrozen(exchangeVirtualDao.getIsFrozen())
+          .postOnly(exchangeVirtualDao.getPostOnly())
+          .high24hr(exchangeVirtualDao.getHigh24hr())
+          .low24hr(exchangeVirtualDao.getLow24hr())
+          .build();
     }
-
-    return ExchangeVirtualResponseModel.builder()
-        .uid(exchangeVirtualDao.getUid())
-        .createdAt(exchangeVirtualDao.getCreatedAt())
-        .updatedAt(exchangeVirtualDao.getUpdatedAt())
-        .deletedFlag(exchangeVirtualDao.isDeletedFlag())
-        .usedFlag(exchangeVirtualDao.isUsedFlag())
-        .name(exchangeVirtualDao.getName())
-        .last(exchangeVirtualDao.getLast())
-        .lowestAsk(exchangeVirtualDao.getLowestAsk())
-        .highestBid(exchangeVirtualDao.getHighestBid())
-        .percentChange(exchangeVirtualDao.getPercentChange())
-        .baseVolume(exchangeVirtualDao.getBaseVolume())
-        .quoteVolume(exchangeVirtualDao.getQuoteVolume())
-        .isFrozen(exchangeVirtualDao.getIsFrozen())
-        .postOnly(exchangeVirtualDao.getPostOnly())
-        .high24hr(exchangeVirtualDao.getHigh24hr())
-        .low24hr(exchangeVirtualDao.getLow24hr())
-        .build();
   }
 
   public ExchangeResponseModel get(ExchangeGetRequestModel requestModel) {
