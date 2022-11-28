@@ -35,7 +35,7 @@
             mi.end_at,
             mi.price,
             mi.price / usd.base_price AS usd_price,
-            mi.price / fog.`last` AS fog_price,
+            mi.price / fog.price AS fog_price,
             mi.transaction_hash,
             mi.sell_id,
             mi.nft_id,
@@ -49,7 +49,7 @@
             i.project_name,
             i.total_price,
             i.total_price / usd.base_price AS usd_total_price,
-            i.total_price / fog.`last` AS fog_total_price,
+            i.total_price / fog.price AS fog_total_price,
             i.quantity,
             i.current_quantity,
             i.allocation_day,
@@ -70,7 +70,7 @@
            LEFT OUTER JOIN realestate.item AS i ON mi.item_uid = i.uid AND i.deleted_flag = false AND i.used_flag = true
            LEFT OUTER JOIN realestate.`member` m ON i.member_uid = m.uid AND m.deleted_flag = false AND m.used_flag = true
            LEFT OUTER JOIN realestate.exchange usd ON usd.code = 'FRX.KRWUSD' AND usd.deleted_flag = false AND usd.used_flag = true
-           LEFT OUTER JOIN realestate.exchange_virtual fog on fog.name = 'FOG_WON' AND fog.deleted_flag = false AND fog.used_flag = true
+           LEFT OUTER JOIN realestate.exchange_virtual2 fog on fog.name = 'FOG_WON' AND fog.deleted_flag = false AND fog.used_flag = true
            LEFT OUTER JOIN common_code AS acc
                            ON i.allocation_uid = acc.uid AND acc.deleted_flag = false AND acc.used_flag = true
            LEFT OUTER JOIN common_code AS scc
@@ -95,7 +95,7 @@
             mi.end_at,
             mi.price,
             mi.price / usd.base_price AS usd_price,
-            mi.price / fog.`last` AS fog_price,
+            mi.price / fog.price AS fog_price,
             mi.transaction_hash,
             mi.sell_id,
             mi.nft_id,
@@ -109,7 +109,7 @@
             i.project_name,
             i.total_price,
             i.total_price / usd.base_price AS usd_total_price,
-            i.total_price / fog.`last` AS fog_total_price,
+            i.total_price / fog.price AS fog_total_price,
             i.quantity,
             i.current_quantity,
             i.allocation_day,
@@ -129,7 +129,7 @@
            LEFT OUTER JOIN realestate.item AS i ON mi.item_uid = i.uid AND i.deleted_flag = false AND i.used_flag = true
            LEFT OUTER JOIN realestate.`member` AS m ON i.member_uid = m.uid AND m.deleted_flag = false AND m.used_flag = true
            LEFT OUTER JOIN realestate.exchange AS usd ON usd.code = 'FRX.KRWUSD' AND usd.deleted_flag = false AND usd.used_flag = true
-           LEFT OUTER JOIN realestate.exchange_virtual AS fog on fog.name = 'FOG_WON' AND fog.deleted_flag = false AND fog.used_flag = true
+           LEFT OUTER JOIN realestate.exchange_virtual2 AS fog on fog.name = 'FOG_WON' AND fog.deleted_flag = false AND fog.used_flag = true
             LEFT OUTER JOIN common_code AS acc
                            ON i.allocation_uid = acc.uid AND acc.deleted_flag = false AND acc.used_flag = true
            LEFT OUTER JOIN common_code AS scc
