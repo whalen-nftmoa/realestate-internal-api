@@ -17,5 +17,94 @@
   </insert>
 
 
+  <select id="count" resultType="int">
+    SELECT 	count(*)
+    FROM item AS i
+           LEFT OUTER JOIN common_code AS acc
+                           ON i.allocation_uid = acc.uid AND acc.deleted_flag = false AND acc.used_flag = true
+           LEFT OUTER JOIN common_code AS scc
+                           ON i.status_uid  = scc.uid AND scc.deleted_flag = false AND scc.used_flag = true
+    WHERE deleted_flag = false AND
+      used_flag = true
+  </select>
+
+  <select id="list" resultType="com.labshigh.realestate.internal.api.item.dao.ItemDao">
+    SELECT 	uid ,
+            created_at ,
+            updated_at ,
+            deleted_flag ,
+            used_flag ,
+            member_uid ,
+            allocation_uid ,
+            acc.name  AS allocation_name,
+            status_uid ,
+            scc.name  AS status_name,
+            image_uri ,
+            project_name,
+            total_price,
+            quantity,
+            current_quantity,
+            sell_start_at,
+            sell_end_at,
+            allocation_day,
+            `right`,
+            location,
+            core_value,
+            area,
+            scale,
+            purpose,
+            company_name,
+            approval_at,
+            website_uri,
+            detail,
+            token_uri
+    FROM item AS i
+           LEFT OUTER JOIN common_code AS acc
+                           ON i.allocation_uid = acc.uid AND acc.deleted_flag = false AND acc.used_flag = true
+           LEFT OUTER JOIN common_code AS scc
+                           ON i.status_uid  = scc.uid AND scc.deleted_flag = false AND scc.used_flag = true
+    WHERE deleted_flag = false AND
+      used_flag = true
+  </select>
+
+  <select id="detail" resultType="com.labshigh.realestate.internal.api.item.dao.ItemDao">
+    SELECT 	i.uid ,
+            i.created_at ,
+            i.updated_at ,
+            i.deleted_flag ,
+            i.used_flag ,
+            i.member_uid ,
+            i.allocation_uid ,
+            acc.name  AS allocation_name,
+            i.status_uid ,
+            scc.name  AS status_name,
+            i.image_uri ,
+            i.project_name,
+            i.total_price,
+            i.quantity,
+            i.current_quantity,
+            i.allocation_day,
+            i.`right`,
+            i.location,
+            i.core_value,
+            i.area,
+            i.`scale`,
+            i.purpose,
+            i.company_name,
+            i.approval_at,
+            i.website_uri,
+            i.detail,
+            i.token_uri
+    FROM item AS i
+           LEFT OUTER JOIN common_code AS acc
+                           ON i.allocation_uid = acc.uid AND acc.deleted_flag = false AND acc.used_flag = true
+           LEFT OUTER JOIN common_code AS scc
+                           ON i.status_uid  = scc.uid AND scc.deleted_flag = false AND scc.used_flag = true
+    WHERE i.deleted_flag = false AND
+      i.used_flag = true AND
+      i.uid = #{uid}
+  </select>
+
+
 </mapper>
 
