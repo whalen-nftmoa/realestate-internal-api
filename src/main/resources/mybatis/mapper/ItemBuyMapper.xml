@@ -21,7 +21,8 @@
     WHERE 	ib.deleted_flag = false AND
       ib.used_flag = true AND
       i.current_quantity > 0 AND
-      ib.market_item_uid = #{request.marketItemUid}
+      ib.market_item_uid = #{request.marketItemUid} AND
+      i.member_uid = #{request.memberUid}
   </select>
 
   <select id="list" resultType="com.labshigh.realestate.internal.api.marketItem.dao.ItemBuyDetailDao">
@@ -86,6 +87,83 @@
       LIMIT #{request.offsetAndRowCount.offset}, #{request.offsetAndRowCount.rowCount}
   </select>
 
+  <select id="countByMember" resultType="int">
+    SELECT 	COUNT(*)
+    FROM realestate.item_buy AS ib
+           LEFT OUTER JOIN realestate.item AS i ON ib.item_uid = i.uid AND i.deleted_flag = false AND i.used_flag = true
+           LEFT OUTER JOIN realestate.`member` m ON i.member_uid = m.uid AND m.deleted_flag = false AND m.used_flag = true
+           LEFT OUTER JOIN realestate.exchange usd ON usd.code = 'FRX.KRWUSD' AND usd.deleted_flag = false AND usd.used_flag = true
+           LEFT OUTER JOIN realestate.exchange_virtual usdt on usdt.name = 'USDT_USD' AND usdt.deleted_flag = false AND usdt.used_flag = true
+           LEFT OUTER JOIN common_code AS acc
+                           ON i.allocation_uid = acc.uid AND acc.deleted_flag = false AND acc.used_flag = true
+           LEFT OUTER JOIN common_code AS scc
+                           ON i.status_uid  = scc.uid AND scc.deleted_flag = false AND scc.used_flag = true
+    WHERE 	ib.deleted_flag = false AND
+      ib.used_flag = true AND
+      i.current_quantity > 0 AND
+      i.member_uid = #{request.memberUid}
+  </select>
+
+  <select id="listByMember" resultType="com.labshigh.realestate.internal.api.marketItem.dao.ItemBuyDetailDao">
+    SELECT 	ib.uid,
+            ib.created_at,
+            ib.updated_at,
+            ib.deleted_flag,
+            ib.used_flag,
+
+            ib.item_uid,
+            ib.market_item_uid,
+            i.quantity,
+            i.current_quantity,
+            ib.price,
+            ib.price / usd.base_price AS usd_price,
+            ib.price / fog.price AS fog_price,
+            ib.nft_id,
+            ib.contract_address,
+            i.member_uid ,
+            i.allocation_uid ,
+            acc.name AS allocation_name,
+            i.status_uid ,
+            scc.name AS status_name,
+            i.image_uri ,
+            i.project_name,
+            i.total_price,
+            i.total_price / usd.base_price AS usd_total_price,
+            i.total_price / fog.price AS fog_total_price,
+            i.quantity,
+            i.current_quantity,
+            i.allocation_day,
+            i.`right`,
+            i.location,
+            i.core_value,
+            i.area,
+            i.`scale`,
+            i.purpose,
+            i.company_name,
+            i.approval_at,
+            i.website_uri,
+            i.detail,
+            i.token_uri,
+            m.wallet_address,
+            mi.start_at,
+            mi.end_at
+    FROM realestate.item_buy AS ib
+           LEFT OUTER JOIN realestate.item AS i ON ib.item_uid = i.uid AND i.deleted_flag = false AND i.used_flag = true
+           LEFT OUTER JOIN realestate.`member` AS m ON i.member_uid = m.uid AND m.deleted_flag = false AND m.used_flag = true
+           LEFT OUTER JOIN realestate.market_item AS mi ON ib.market_item_uid = mi.uid AND mi.deleted_flag = false AND mi.used_flag = true
+           LEFT OUTER JOIN realestate.exchange usd ON usd.code = 'FRX.KRWUSD' AND usd.deleted_flag = false AND usd.used_flag = true
+           LEFT OUTER JOIN realestate.exchange_virtual2 fog on fog.name = 'FOG_WON' AND fog.deleted_flag = false AND fog.used_flag = true
+           LEFT OUTER JOIN common_code AS acc
+                           ON i.allocation_uid = acc.uid AND acc.deleted_flag = false AND acc.used_flag = true
+           LEFT OUTER JOIN common_code AS scc
+                           ON i.status_uid  = scc.uid AND scc.deleted_flag = false AND scc.used_flag = true
+    WHERE 	ib.deleted_flag = false AND
+      ib.used_flag = true AND
+      i.current_quantity > 0 AND
+      i.member_uid = #{request.memberUid}
+    ORDER BY ib.uid DESC
+      LIMIT #{request.offsetAndRowCount.offset}, #{request.offsetAndRowCount.rowCount}
+  </select>
 
 
 

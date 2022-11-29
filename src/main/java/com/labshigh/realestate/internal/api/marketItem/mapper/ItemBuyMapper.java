@@ -17,4 +17,11 @@ public interface ItemBuyMapper {
   int count(@Param(value = "request") ItemBuyListRequestModel requestModel);
 
   List<ItemBuyDetailDao> list(@Param(value = "request") ItemBuyListRequestModel requestModel);
+
+  int countByMember(@Param(value = "request") ItemBuyListRequestModel requestModel);
+
+  List<ItemBuyDetailDao> listByMember(
+      @Param(value = "request") ItemBuyListRequestModel requestModel);
+
+
 }

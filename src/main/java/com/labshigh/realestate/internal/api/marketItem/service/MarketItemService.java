@@ -138,6 +138,27 @@ public class MarketItemService {
     return responseListModel;
   }
 
+  public ResponseListModel listItemBuyByMember(ItemBuyListRequestModel requestModel) {
+    ResponseListModel responseListModel = new ResponseListModel();
+
+    int totalCount = itemBuyMapper.countByMember(requestModel);
+
+    responseListModel.setCurrentPage(requestModel.getPage());
+    responseListModel.setTotalCount(totalCount);
+    responseListModel.setPageSize(requestModel.getSize());
+    if (totalCount < 1) {
+      responseListModel.setList(Collections.emptyList());
+      return responseListModel;
+    }
+
+    List<ItemBuyDetailDao> itemBuyDetailDaoList = itemBuyMapper.listByMember(requestModel);
+
+    List<ItemBuyListResponseModel> responseModelList = itemBuyDetailDaoList.stream()
+        .map(this::convertItemBuyListResponseModel).collect(Collectors.toList());
+    responseListModel.setList(responseModelList);
+    return responseListModel;
+  }
+
   public ResponseListModel listMarketItem(MarketItemListRequestModel requestModel) {
     ResponseListModel responseListModel = new ResponseListModel();
 

@@ -9,6 +9,7 @@ import com.labshigh.realestate.internal.api.marketItem.model.request.MarketItemD
 import com.labshigh.realestate.internal.api.marketItem.model.request.MarketItemListRequestModel;
 import com.labshigh.realestate.internal.api.marketItem.service.MarketItemService;
 import com.labshigh.realestate.internal.api.marketItem.validator.ItemBuyInsertRequestValidator;
+import com.labshigh.realestate.internal.api.marketItem.validator.ItemBuyListByMemberRequestValidator;
 import com.labshigh.realestate.internal.api.marketItem.validator.ItemBuyListRequestValidator;
 import com.labshigh.realestate.internal.api.marketItem.validator.MarketItemDetailRequestValidator;
 import com.labshigh.realestate.internal.api.marketItem.validator.MarketItemListRequestValidator;
@@ -138,6 +139,38 @@ public class MarketItemController {
     } else {
       try {
         responseModel.setData(marketItemService.listItemBuy(itemBuyListRequestModel));
+      } catch (ServiceException e) {
+        responseModel.setStatus(HttpStatus.PRECONDITION_FAILED.value());
+        responseModel.setMessage(e.getMessage());
+      } catch (Exception e) {
+        responseModel.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
+        responseModel.setMessage(HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase());
+        responseModel.error.setErrorCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
+        responseModel.error.setErrorMessage(e.getLocalizedMessage());
+      }
+    }
+    return responseModel.toResponse();
+  }
+
+  @ApiOperation("Item Buy 리스트(멤버 기준) 조회")
+  @GetMapping(value = "buy/member/{memberUid}", produces = {Constants.RESPONSE_CONTENT_TYPE})
+  public ResponseEntity<String> itemBuyListByMember(
+      @PathVariable(value = "memberUid") long memberUid,
+      ItemBuyListRequestModel itemBuyListRequestModel,
+      BindingResult bindingResult) {
+    ResponseModel responseModel = new ResponseModel();
+
+    itemBuyListRequestModel.setMemberUid(memberUid);
+
+    ItemBuyListByMemberRequestValidator.builder().build()
+        .validate(itemBuyListRequestModel, bindingResult);
+
+    if (bindingResult.hasErrors()) {
+      responseModel.setStatus(HttpStatus.PRECONDITION_FAILED.value());
+      responseModel.setMessage(bindingResult.getAllErrors().get(0).getDefaultMessage());
+    } else {
+      try {
+        responseModel.setData(marketItemService.listItemBuyByMember(itemBuyListRequestModel));
       } catch (ServiceException e) {
         responseModel.setStatus(HttpStatus.PRECONDITION_FAILED.value());
         responseModel.setMessage(e.getMessage());
