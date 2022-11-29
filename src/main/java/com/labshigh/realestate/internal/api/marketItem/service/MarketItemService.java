@@ -96,6 +96,11 @@ public class MarketItemService {
 
       itemMapper.insertBuyItem(itemDao);
 
+      itemFileMapper.insertBuyItem(ItemFileDao.builder()
+          .itemUid(marketItemDetailDao.getItemUid())
+          .newItemUid(itemDao.getUid())
+          .build());
+
       ItemBuyDao itemBuyDao = ItemBuyDao.builder()
           .price(requestModel.getPrice())
           .nftId(requestModel.getNftId())

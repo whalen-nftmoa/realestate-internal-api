@@ -26,6 +26,7 @@ public class ItemFileDao {
 
   private long categoryUid;
   private long itemUid;
+  private long newItemUid;
   private String fileUri;
 
 

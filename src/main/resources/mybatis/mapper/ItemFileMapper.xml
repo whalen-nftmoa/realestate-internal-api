@@ -6,6 +6,14 @@
     INSERT INTO realestate.item_file(category_uid, item_uid, file_uri)
     VALUES(#{categoryUid}, #{itemUid}, #{fileUri})
   </insert>
+  <insert id="insertBuyItem" parameterType="com.labshigh.realestate.internal.api.item.dao.ItemFileDao" >
+    INSERT INTO realestate.item_file(category_uid, item_uid, file_uri)
+    SELECT category_uid,#{newItemUid},file_uri
+    FROM realestate.item_file AS i
+    WHERE i.used_flag = true AND
+      i.deleted_flag = false AND
+      i.item_uid = #{itemUid}
+  </insert>
 
   <select id="listFile" resultType="com.labshigh.realestate.internal.api.item.dao.ItemFileDao">
     SELECT 	i.uid,

@@ -11,6 +11,8 @@ public interface ItemFileMapper {
 
   void insert(ItemFileDao dao);
 
+  void insertBuyItem(ItemFileDao dao);
+
   List<ItemFileDao> listFile(ItemFileDao dao);
 
 }
