@@ -204,6 +204,10 @@ public class MarketItemService {
   }
 
   private ItemBuyListResponseModel convertItemBuyListResponseModel(ItemBuyDetailDao dao) {
+
+    List<ItemFileDao> fileDaoList = itemFileMapper.listFile(
+        ItemFileDao.builder().itemUid(dao.getItemUid()).build());
+
     return ItemBuyListResponseModel.builder()
         .uid(dao.getUid())
         .createdAt(dao.getCreatedAt())
@@ -244,6 +248,8 @@ public class MarketItemService {
         .walletAddress(dao.getWalletAddress())
         .startAt(dao.getStartAt())
         .endAt(dao.getEndAt())
+        .fileList(fileDaoList.stream().map(this::convertItemFileResponseModel)
+            .collect(Collectors.toList()))
         .build();
 
   }

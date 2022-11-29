@@ -3,6 +3,7 @@ package com.labshigh.realestate.internal.api.marketItem.model.response;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.labshigh.realestate.internal.api.common.Constants;
 import java.time.LocalDateTime;
+import java.util.List;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
@@ -57,5 +58,7 @@ public class ItemBuyListResponseModel {
   private LocalDateTime startAt;
   @JsonFormat(pattern = Constants.JSONFY_DATE_FORMAT)
   private LocalDateTime endAt;
+
+  private List<ItemFileResponseModel> fileList;
 
 }
