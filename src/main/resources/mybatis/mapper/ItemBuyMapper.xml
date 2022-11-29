@@ -82,6 +82,7 @@
       i.current_quantity > 0 AND
       ib.market_item_uid = #{request.marketItemUid} AND
       i.member_uid = #{request.memberUid}
+    ORDER BY ib.uid DESC
       LIMIT #{request.offsetAndRowCount.offset}, #{request.offsetAndRowCount.rowCount}
   </select>
 

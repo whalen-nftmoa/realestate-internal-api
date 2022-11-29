@@ -80,6 +80,7 @@
       mi.minting_status = 1 AND
       mi.current_quantity > 0 AND
       NOW() BETWEEN mi.start_at AND mi.end_at
+    ORDER BY mi.uid DESC
     LIMIT #{request.offsetAndRowCount.offset}, #{request.offsetAndRowCount.rowCount}
   </select>
   <select id="detail" resultType="com.labshigh.realestate.internal.api.marketItem.dao.MarketItemDetailDao">
