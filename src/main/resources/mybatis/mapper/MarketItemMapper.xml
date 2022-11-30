@@ -18,9 +18,7 @@
                            ON i.status_uid  = scc.uid AND scc.deleted_flag = false AND scc.used_flag = true
     WHERE 	mi.deleted_flag = false AND
       mi.used_flag = true AND
-      mi.minting_status = 1 AND
-      mi.current_quantity > 0 AND
-      NOW() BETWEEN mi.start_at AND mi.end_at
+      mi.minting_status = 1
   </select>
   <select id="listMarketItem" resultType="com.labshigh.realestate.internal.api.marketItem.dao.MarketItemDetailDao">
     SELECT 	mi.uid,
@@ -77,9 +75,7 @@
                            ON i.status_uid  = scc.uid AND scc.deleted_flag = false AND scc.used_flag = true
     WHERE 	mi.deleted_flag = false AND
       mi.used_flag = true AND
-      mi.minting_status = 1 AND
-      mi.current_quantity > 0 AND
-      NOW() BETWEEN mi.start_at AND mi.end_at
+      mi.minting_status = 1 
     ORDER BY mi.uid DESC
     LIMIT #{request.offsetAndRowCount.offset}, #{request.offsetAndRowCount.rowCount}
   </select>
@@ -138,13 +134,8 @@
     WHERE 	mi.deleted_flag = false AND
       mi.used_flag = true AND
       mi.minting_status = 1 AND
-      mi.current_quantity > 0 AND
-      NOW() BETWEEN mi.start_at AND mi.end_at AND
       mi.uid = #{uid}
   </select>
-
-
-
 
   <update id="updateCurrentQuantity">
     UPDATE realestate.market_item

@@ -241,6 +241,7 @@ public class MarketItemService {
         .scale(dao.getScale())
         .purpose(dao.getPurpose())
         .companyName(dao.getCompanyName())
+        .indexName(dao.getIndexName())
         .approvalAt(dao.getApprovalAt())
         .websiteUri(dao.getWebsiteUri())
         .detail(dao.getDetail())

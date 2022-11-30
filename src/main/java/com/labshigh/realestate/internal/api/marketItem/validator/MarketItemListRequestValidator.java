@@ -27,7 +27,8 @@ public class MarketItemListRequestValidator implements Validator {
     }
 
     if (marketItem2ListRequestModel.getSize() > Constants.MAX_LIST_PAGE_SIZE) {
-      errors.reject("size.lengthOver", String.format(Constants.MSG_MAX_LENGTH_OVER_ERROR, "size"));
+      errors.reject("size.lengthOver",
+          String.format(Constants.MSG_MAX_LENGTH_OVER_ERROR, Constants.MAX_LIST_PAGE_SIZE));
     }
 
   }

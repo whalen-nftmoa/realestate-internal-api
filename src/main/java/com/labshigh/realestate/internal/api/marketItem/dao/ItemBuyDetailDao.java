@@ -51,6 +51,7 @@ public class ItemBuyDetailDao {
   private String scale;
   private String purpose;
   private String companyName;
+  private String indexName;
   @JsonFormat(pattern = Constants.JSONFY_DATE_FORMAT)
   private LocalDateTime approvalAt;
   private String websiteUri;

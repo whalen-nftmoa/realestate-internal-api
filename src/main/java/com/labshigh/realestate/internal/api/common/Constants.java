@@ -18,7 +18,7 @@ public class Constants {
   // 기본 페이지 사이즈
   public static final int DEFAULT_PAGE_SIZE = 20;
   // 최대 페이지 사이즈
-  public static final int MAX_LIST_PAGE_SIZE = 250;
+  public static final int MAX_LIST_PAGE_SIZE = 1000;
 
   // http status
   public static final String RESPONSE_CODE_CORE_ERROR_MSG = "CORE API Response Error";
