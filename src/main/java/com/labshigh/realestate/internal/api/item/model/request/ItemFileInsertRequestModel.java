@@ -8,6 +8,7 @@ import lombok.Setter;
 public class ItemFileInsertRequestModel {
 
   private long categoryUid;
+  private String categoryName;
   private long itemUid;
   private String fileUri;
 }

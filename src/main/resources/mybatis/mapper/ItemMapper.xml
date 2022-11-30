@@ -105,6 +105,22 @@
       i.uid = #{uid}
   </select>
 
+  <select id="listCommonCode" resultType="com.labshigh.realestate.internal.api.item.dao.ItemFileCommonCodeDao">
+    SELECT uid,
+    created_at,
+    updated_at,
+    deleted_flag,
+    used_flag,
+    name,
+    image,
+    sort,
+    parent_common_code_uid
+    FROM common_code
+    WHERE deleted_flag = false
+      AND parent_common_code_uid = #{request.uid}
+    ORDER BY sort ASC
+  </select>
+
 
 </mapper>
 

@@ -6,6 +6,7 @@ import com.labshigh.realestate.internal.api.common.exceptions.ServiceException;
 import com.labshigh.realestate.internal.api.common.utils.FileUploadUtils;
 import com.labshigh.realestate.internal.api.common.utils.enums.FileType;
 import com.labshigh.realestate.internal.api.item.dao.ItemDao;
+import com.labshigh.realestate.internal.api.item.dao.ItemFileCommonCodeDao;
 import com.labshigh.realestate.internal.api.item.dao.ItemFileDao;
 import com.labshigh.realestate.internal.api.item.mapper.ItemFileMapper;
 import com.labshigh.realestate.internal.api.item.mapper.ItemMapper;
@@ -19,6 +20,7 @@ import com.labshigh.realestate.internal.api.marketItem.dao.MarketItemDao;
 import com.labshigh.realestate.internal.api.marketItem.mapper.MarketItemMapper;
 import java.io.IOException;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.extern.log4j.Log4j2;
@@ -95,6 +97,8 @@ public class ItemService {
         .detail(requestModel.getDetail())
         .itemFiles(requestModel.getItemFiles())
         .build();
+
+    fileCategoryNameBind(dao.getItemFiles());
 
     String pathName = requestModel.getImageUri()
         .replace("https://" + s3EndPoint + "/" + s3NftBucket, "").split("/")[2];
@@ -182,6 +186,22 @@ public class ItemService {
         .detail(dao.getDetail())
         .tokenUri("https://" + s3EndPoint + "/" + s3NftBucket + dao.getTokenUri())
         .build();
+  }
+
+  private void fileCategoryNameBind(List<ItemFileInsertRequestModel> fileRequestModel) {
+
+    List<ItemFileCommonCodeDao> commonCodes = itemMapper.listCommonCode(
+        ItemFileCommonCodeDao.builder()
+            .uid(12L)
+            .build());
+    HashMap<Long, String> categoryMap = new HashMap<>();
+    for (ItemFileCommonCodeDao dao : commonCodes) {
+      categoryMap.put(dao.getUid(), dao.getName());
+    }
+    for (ItemFileInsertRequestModel fileModel : fileRequestModel) {
+
+      fileModel.setCategoryName(categoryMap.get(fileModel.getCategoryUid()));
+    }
   }
 
   private ItemDetailResponseModel convertItemDetailResponseModel(ItemDao dao) {
