@@ -2,7 +2,9 @@ package com.labshigh.realestate.internal.api.item.dao;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.labshigh.realestate.internal.api.common.Constants;
+import com.labshigh.realestate.internal.api.item.model.request.ItemFileInsertRequestModel;
 import java.time.LocalDateTime;
+import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -16,6 +18,8 @@ import lombok.Setter;
 @AllArgsConstructor
 public class ItemDao {
 
+  //메타데이터.json 저장 용
+  List<ItemFileInsertRequestModel> itemFiles;
   private long uid;
   @JsonFormat(pattern = Constants.JSONFY_DATE_FORMAT)
   private LocalDateTime createdAt;
@@ -23,7 +27,6 @@ public class ItemDao {
   private LocalDateTime updatedAt;
   private boolean deletedFlag;
   private Boolean usedFlag;
-
   private long memberUid;
   private long allocationUid;
   private long statusUid;

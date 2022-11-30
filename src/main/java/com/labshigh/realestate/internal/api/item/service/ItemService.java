@@ -77,7 +77,7 @@ public class ItemService {
         .allocationUid(requestModel.getAllocationUid())
         .statusUid(requestModel.getStatusUid())
         .imageUri(
-            requestModel.getImageUri().replace("https://" + s3EndPoint + "/" + s3NftBucket, ""))
+            requestModel.getImageUri())
         .projectName(requestModel.getProjectName())
         .totalPrice(requestModel.getTotalPrice())
         .quantity(requestModel.getQuantity())
@@ -93,6 +93,7 @@ public class ItemService {
         .approvalAt(requestModel.getApprovalAt().atTime(0, 0, 0))
         .websiteUri(requestModel.getWebsiteUri())
         .detail(requestModel.getDetail())
+        .itemFiles(requestModel.getItemFiles())
         .build();
 
     String pathName = requestModel.getImageUri()
@@ -101,6 +102,9 @@ public class ItemService {
     String tokenUri = fileUploadUtils.uploadByObject(dao, pathName, FileType.nft);
 
     dao.setTokenUri(tokenUri.replace("https://" + s3EndPoint + "/" + s3NftBucket, ""));
+
+    dao.setImageUri(
+        requestModel.getImageUri().replace("https://" + s3EndPoint + "/" + s3NftBucket, ""));
 
     itemMapper.insert(dao);
 
