@@ -32,7 +32,8 @@ public class ExchangeService {
 
   public ExchangeVirtualResponseModel getVirtual(ExchangeGetVirtualRequestModel requestModel) {
 
-    if (requestModel.getExchangeName().equals("FOG_WON")) {
+    if (requestModel.getExchangeName().equals("FOG_WON") || requestModel.getExchangeName()
+        .equals("FOGnet_USD")) {
 
       ExchangeVirtual2Dao exchangeVirtual2Dao = exchangeVirtual2Mapper.get(
           ExchangeVirtual2Dao.builder().name(requestModel.getExchangeName()).build());
