@@ -357,7 +357,7 @@ public class MarketItemService {
         .detail(dao.getDetail())
         .tokenUri("https://" + s3EndPoint + "/" + s3NftBucket + dao.getTokenUri())
         .walletAddress(dao.getWalletAddress())
-        .itemFileUri(dao.getItemFileUri())
+        .itemFileUri("https://" + s3EndPoint + "/" + s3NftBucket + dao.getItemFileUri())
         .build();
   }
 
