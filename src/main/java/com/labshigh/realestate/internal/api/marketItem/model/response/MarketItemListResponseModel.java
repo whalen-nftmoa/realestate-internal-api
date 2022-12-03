@@ -60,4 +60,6 @@ public class MarketItemListResponseModel {
   private String tokenUri;
   private String walletAddress;
 
+  private String itemFileUri;
+
 }

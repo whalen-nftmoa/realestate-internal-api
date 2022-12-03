@@ -64,4 +64,6 @@ public class MarketItemDetailDao {
   private String tokenUri;
   private String walletAddress;
 
+  private String itemFileUri;
+
 }

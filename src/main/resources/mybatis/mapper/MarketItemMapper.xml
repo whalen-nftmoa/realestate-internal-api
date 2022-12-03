@@ -62,7 +62,8 @@
             i.website_uri,
             i.detail,
             i.token_uri,
-            m.wallet_address
+            m.wallet_address,
+            (SELECT file_uri FROM  realestate.item_file where item_uid = mi.item_uid AND category_uid = 13 LIMIT 0 , 1) AS item_file_uri
 
     FROM realestate.market_item AS mi
            LEFT OUTER JOIN realestate.item AS i ON mi.item_uid = i.uid AND i.deleted_flag = false AND i.used_flag = true
