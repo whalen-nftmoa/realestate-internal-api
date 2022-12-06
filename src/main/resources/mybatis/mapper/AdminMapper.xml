@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.labshigh.realestate.internal.api.admin.mapper.AdminMapper">
+  <insert id="insert" parameterType="com.labshigh.realestate.internal.api.admin.dao.AdminDAO" useGeneratedKeys="true" keyProperty="uid">
+    INSERT INTO admin (admin_id, password, name, used_flag) VALUES (#{adminId}, #{password}, #{name}, #{usedFlag})
+  </insert>
+
+  <update id="update" parameterType="com.labshigh.realestate.internal.api.admin.dao.AdminDAO">
+    UPDATE admin SET name = #{name},
+                                  used_flag = #{usedFlag}
+    <if test="password != null and !password.equals('')">
+                              , password = #{password}
+    </if>
+    WHERE deleted_flag = false AND
+          uid = #{uid}
+  </update>
+  <update id="updatePassword" parameterType="com.labshigh.realestate.internal.api.admin.dao.AdminDAO">
+    UPDATE admin SET password = #{password}
+    WHERE deleted_flag = false AND
+          uid = #{uid}
+  </update>
+
+  <delete id="delete" parameterType="com.labshigh.realestate.internal.api.admin.dao.AdminDAO">
+    UPDATE admin SET deleted_flag = #{deletedFlag}
+    WHERE deleted_flag = false AND
+          uid = #{uid}
+  </delete>
+
+  <select id="check" resultType="int">
+    SELECT COUNT(*) AS cnt
+    FROM admin AS a
+        LEFT JOIN admin_role AS ar ON ar.deleted_flag = false AND ar.used_flag = true AND ar.admin_uid = a.uid
+        LEFT JOIN role AS r ON r.deleted_flag = false AND r.used_flag = true AND r.uid = ar.role_uid
+    WHERE a.deleted_flag = false AND
+          a.uid = #{adminUid}
+  </select>
+  <select id="count" resultType="int">
+    SELECT COUNT(*) AS cnt
+    FROM admin AS a
+        LEFT JOIN admin_role AS ar ON ar.deleted_flag = false AND ar.used_flag = true AND ar.admin_uid = a.uid
+        LEFT JOIN role AS r ON r.deleted_flag = false AND r.used_flag = true AND r.uid = ar.role_uid
+    WHERE a.deleted_flag = false
+    <if test="request.usedFlag != null">
+      AND a.used_flag = #{request.usedFlag}
+    </if>
+    <if test="request.roleUid != null">
+      AND r.uid = #{request.roleUid}
+    </if>
+    <choose>
+      <when test="request.searchKey != null and request.searchKey == 'adminId'">
+        AND a.admin_id LIKE CONCAT('%', #{request.searchValue}, '%')
+      </when>
+      <when test="request.searchKey != null and request.searchKey == 'name'">
+        AND a.name LIKE CONCAT('%', #{request.searchValue}, '%')
+      </when>
+      <when test="request.searchKey != null and request.searchKey == 'all'">
+        AND (a.admin_id LIKE CONCAT('%', #{request.searchValue}, '%') OR a.name LIKE CONCAT('%', #{request.searchValue}, '%'))
+      </when>
+    </choose>
+  </select>
+  <select id="list" resultType="com.labshigh.realestate.internal.api.admin.dao.AdminDAO">
+    SELECT a.uid,
+           a.created_at,
+           a.updated_at,
+           a.deleted_flag,
+           a.used_flag,
+           a.admin_id,
+           a.password,
+           a.name,
+           ar.role_uid,
+           r.name AS role_name
+    FROM admin AS a
+        LEFT JOIN admin_role AS ar ON ar.deleted_flag = false AND ar.used_flag = true AND ar.admin_uid = a.uid
+        LEFT JOIN role AS r ON r.deleted_flag = false AND r.used_flag = true AND r.uid = ar.role_uid
+    WHERE a.deleted_flag = false
+    <if test="request.usedFlag != null">
+      AND a.used_flag = #{request.usedFlag}
+    </if>
+    <if test="request.roleUid != null">
+      AND r.uid = #{request.roleUid}
+    </if>
+    <choose>
+      <when test="request.searchKey != null and request.searchKey == 'adminId'">
+        AND a.admin_id LIKE CONCAT('%', #{request.searchValue}, '%')
+      </when>
+      <when test="request.searchKey != null and request.searchKey == 'name'">
+        AND a.name LIKE CONCAT('%', #{request.searchValue}, '%')
+      </when>
+      <when test="request.searchKey != null and request.searchKey == 'all'">
+        AND (a.admin_id LIKE CONCAT('%', #{request.searchValue}, '%') OR a.name LIKE CONCAT('%', #{request.searchValue}, '%'))
+      </when>
+    </choose>
+    ORDER BY a.uid DESC
+    LIMIT #{request.offsetAndRowCount.offset}, #{request.offsetAndRowCount.rowCount}
+  </select>
+  <select id="detail" resultType="com.labshigh.realestate.internal.api.admin.dao.AdminDAO">
+    SELECT a.uid,
+           a.created_at,
+           a.updated_at,
+           a.deleted_flag,
+           a.used_flag,
+           a.admin_id,
+           a.password,
+           a.name,
+           ar.role_uid,
+           r.name AS role_name
+    FROM admin AS a
+           LEFT JOIN admin_role AS ar ON ar.deleted_flag = false AND ar.used_flag = true AND ar.admin_uid = a.uid
+           LEFT JOIN role AS r ON r.deleted_flag = false AND r.used_flag = true AND r.uid = ar.role_uid
+    WHERE a.deleted_flag = false AND
+          a.uid = #{adminUid}
+  </select>
+  <select id="detailByAdminId" resultType="com.labshigh.realestate.internal.api.admin.dao.AdminDAO">
+    SELECT a.uid,
+           a.created_at,
+           a.updated_at,
+           a.deleted_flag,
+           a.used_flag,
+           a.admin_id,
+           a.password,
+           a.name,
+           ar.role_uid,
+           r.name AS role_name
+    FROM admin AS a
+        LEFT JOIN admin_role AS ar ON ar.deleted_flag = false AND ar.used_flag = true AND ar.admin_uid = a.uid
+        LEFT JOIN role AS r ON r.deleted_flag = false AND r.used_flag = true AND r.uid = ar.role_uid
+    WHERE a.deleted_flag = false AND
+          a.admin_id = #{adminId}
+  </select>
+</mapper>

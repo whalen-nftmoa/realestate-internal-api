@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.labshigh.realestate.internal.api.admin.mapper.AdminRoleMapper">
+  <insert id="insert" parameterType="com.labshigh.realestate.internal.api.admin.dao.AdminRoleDAO" useGeneratedKeys="true" keyProperty="uid">
+    INSERT INTO admin_role (admin_uid, role_uid) VALUES (#{adminUid}, #{roleUid})
+  </insert>
+
+  <update id="update" parameterType="com.labshigh.realestate.internal.api.admin.dao.AdminRoleDAO">
+    UPDATE admin_role SET role_uid = #{roleUid}
+    WHERE deleted_flag = false AND
+          admin_uid = #{adminUid}
+  </update>
+
+  <delete id="deleteByAdminUid" parameterType="com.labshigh.realestate.internal.api.admin.dao.AdminDAO">
+    UPDATE admin_role SET deleted_flag = #{deletedFlag}
+    WHERE deleted_flag = false AND
+          admin_uid = #{adminUid}
+  </delete>
+</mapper>
