@@ -11,6 +11,9 @@ import lombok.Setter;
 @Setter
 public class MarketItemListRequestModel {
 
+  @ApiModelProperty(value = "배당 여부 코드")
+  private long allocationUid;
+  
   @ApiModelProperty(value = "페이지")
   private int page = 1;
 

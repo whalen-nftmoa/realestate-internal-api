@@ -19,6 +19,9 @@
     WHERE 	mi.deleted_flag = false AND
       mi.used_flag = true AND
       mi.minting_status = 1
+    <if test="request.allocationUid > 0">
+      AND i.allocation_uid = #{request.allocationUid}
+    </if>
   </select>
   <select id="listMarketItem" resultType="com.labshigh.realestate.internal.api.marketItem.dao.MarketItemDetailDao">
     SELECT 	mi.uid,
@@ -76,7 +79,10 @@
                            ON i.status_uid  = scc.uid AND scc.deleted_flag = false AND scc.used_flag = true
     WHERE 	mi.deleted_flag = false AND
       mi.used_flag = true AND
-      mi.minting_status = 1 
+      mi.minting_status = 1
+      <if test="request.allocationUid > 0">
+        AND i.allocation_uid = #{request.allocationUid}
+      </if>
     ORDER BY mi.uid DESC
     LIMIT #{request.offsetAndRowCount.offset}, #{request.offsetAndRowCount.rowCount}
   </select>
