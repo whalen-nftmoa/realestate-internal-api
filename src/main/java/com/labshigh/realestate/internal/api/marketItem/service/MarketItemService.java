@@ -11,6 +11,7 @@ import com.labshigh.realestate.internal.api.marketItem.dao.ItemBuyDao;
 import com.labshigh.realestate.internal.api.marketItem.dao.ItemBuyDetailDao;
 import com.labshigh.realestate.internal.api.marketItem.dao.MarketItemDao;
 import com.labshigh.realestate.internal.api.marketItem.dao.MarketItemDetailDao;
+import com.labshigh.realestate.internal.api.marketItem.dao.SellMemberDao;
 import com.labshigh.realestate.internal.api.marketItem.mapper.ItemBuyMapper;
 import com.labshigh.realestate.internal.api.marketItem.mapper.MarketItemMapper;
 import com.labshigh.realestate.internal.api.marketItem.model.request.ItemBuyInsertRequestModel;
@@ -22,6 +23,7 @@ import com.labshigh.realestate.internal.api.marketItem.model.response.ItemBuyRes
 import com.labshigh.realestate.internal.api.marketItem.model.response.ItemFileResponseModel;
 import com.labshigh.realestate.internal.api.marketItem.model.response.MarketItemDetailResponseModel;
 import com.labshigh.realestate.internal.api.marketItem.model.response.MarketItemListResponseModel;
+import com.labshigh.realestate.internal.api.marketItem.model.response.SellMemberResponseModel;
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
@@ -201,6 +203,20 @@ public class MarketItemService {
         fileDaoList.stream().map(this::convertItemFileResponseModel).collect(Collectors.toList())
     );
     return responseModel;
+  }
+
+  public List<SellMemberResponseModel> listSellMember() {
+    List<SellMemberDao> sellMemberDaoList = marketItemMapper.listSellMember();
+
+    return sellMemberDaoList.stream().map(this::convertSellMemberResponseModel)
+        .collect(Collectors.toList());
+  }
+
+  private SellMemberResponseModel convertSellMemberResponseModel(SellMemberDao dao) {
+    return SellMemberResponseModel.builder()
+        .memberUid(dao.getMemberUid())
+        .walletAddress(dao.getWalletAddress())
+        .build();
   }
 
   private ItemBuyListResponseModel convertItemBuyListResponseModel(ItemBuyDetailDao dao) {

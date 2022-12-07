@@ -22,6 +22,9 @@
     <if test="request.allocationUid > 0">
       AND i.allocation_uid = #{request.allocationUid}
     </if>
+    <if test="request.memberUid > 0">
+      AND m.uid = #{request.memberUid}
+    </if>
   </select>
   <select id="listMarketItem" resultType="com.labshigh.realestate.internal.api.marketItem.dao.MarketItemDetailDao">
     SELECT 	mi.uid,
@@ -83,6 +86,9 @@
       <if test="request.allocationUid > 0">
         AND i.allocation_uid = #{request.allocationUid}
       </if>
+      <if test="request.memberUid > 0">
+        AND m.uid = #{request.memberUid}
+      </if>
     ORDER BY mi.uid DESC
     LIMIT #{request.offsetAndRowCount.offset}, #{request.offsetAndRowCount.rowCount}
   </select>
@@ -142,6 +148,18 @@
       mi.used_flag = true AND
       mi.minting_status = 1 AND
       mi.uid = #{uid}
+  </select>
+
+  <select id="listSellMember" resultType="com.labshigh.realestate.internal.api.marketItem.dao.SellMemberDao">
+    SELECT 	DISTINCT
+            m.wallet_address,
+            m.uid AS member_uid
+    FROM realestate.market_item AS mi
+    LEFT OUTER JOIN realestate.item AS i ON mi.item_uid = i.uid AND i.deleted_flag = false AND i.used_flag = true
+    LEFT OUTER JOIN realestate.`member` m ON i.member_uid = m.uid AND m.deleted_flag = false AND m.used_flag = true
+    WHERE 	mi.deleted_flag = false AND
+    mi.used_flag = true AND
+    mi.minting_status = 1
   </select>
 
   <update id="updateCurrentQuantity">

@@ -13,7 +13,9 @@ public class MarketItemListRequestModel {
 
   @ApiModelProperty(value = "배당 여부 코드")
   private long allocationUid;
-  
+  @ApiModelProperty(value = "멤버 uid 여부 코드")
+  private long memberUid;
+
   @ApiModelProperty(value = "페이지")
   private int page = 1;
 
