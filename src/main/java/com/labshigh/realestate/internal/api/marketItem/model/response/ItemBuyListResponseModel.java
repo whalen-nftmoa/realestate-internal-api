@@ -60,6 +60,8 @@ public class ItemBuyListResponseModel {
   @JsonFormat(pattern = Constants.JSONFY_DATE_FORMAT)
   private LocalDateTime endAt;
 
+  private String transactionHash;
+
   private List<ItemFileResponseModel> fileList;
 
 }

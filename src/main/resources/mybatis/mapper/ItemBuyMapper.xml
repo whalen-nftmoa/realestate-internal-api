@@ -25,6 +25,12 @@
     <if test="request.memberUid > 0">
       AND i.member_uid = #{request.memberUid}
     </if>
+    <if test="request.searchValue != ''">
+      AND m.wallet_address LIKE CONCAT('%',#{request.searchValue},'%')
+    </if>
+    <if test="request.startDate != null and request.endDate != null">
+      AND ib.created_at BETWEEN #{request.startDate} AND #{request.endDate}
+    </if>
   </select>
 
   <select id="list" resultType="com.labshigh.realestate.internal.api.marketItem.dao.ItemBuyDetailDao">
@@ -111,8 +117,13 @@
                            ON i.status_uid  = scc.uid AND scc.deleted_flag = false AND scc.used_flag = true
     WHERE 	ib.deleted_flag = false AND
       ib.used_flag = true AND
-      i.current_quantity > 0 AND
-      i.member_uid = #{request.memberUid}
+      i.current_quantity > 0
+    <if test="request.memberUid > 0">
+      AND i.member_uid = #{request.memberUid}
+    </if>
+    <if test="request.searchValue != ''">
+      AND m.wallet_address LIKE CONCAT('%',#{request.searchValue},'%')
+    </if>
   </select>
 
   <select id="listByMember" resultType="com.labshigh.realestate.internal.api.marketItem.dao.ItemBuyDetailDao">
@@ -158,7 +169,8 @@
             i.token_uri,
             m.wallet_address,
             mi.start_at,
-            mi.end_at
+            mi.end_at,
+            mi.transaction_hash
     FROM realestate.item_buy AS ib
            LEFT OUTER JOIN realestate.item AS i ON ib.item_uid = i.uid AND i.deleted_flag = false AND i.used_flag = true
            LEFT OUTER JOIN realestate.`member` AS m ON i.member_uid = m.uid AND m.deleted_flag = false AND m.used_flag = true
@@ -171,8 +183,14 @@
                            ON i.status_uid  = scc.uid AND scc.deleted_flag = false AND scc.used_flag = true
     WHERE 	ib.deleted_flag = false AND
       ib.used_flag = true AND
-      i.current_quantity > 0 AND
-      i.member_uid = #{request.memberUid}
+      i.current_quantity > 0
+      <if test="request.memberUid > 0">
+        AND i.member_uid = #{request.memberUid}
+      </if>
+      <if test="request.searchValue != ''">
+        AND m.wallet_address LIKE CONCAT('%',#{request.searchValue},'%')
+      </if>
+
     ORDER BY ib.uid DESC
       LIMIT #{request.offsetAndRowCount.offset}, #{request.offsetAndRowCount.rowCount}
   </select>

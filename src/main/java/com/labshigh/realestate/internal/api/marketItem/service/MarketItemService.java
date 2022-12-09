@@ -265,6 +265,7 @@ public class MarketItemService {
         .walletAddress(dao.getWalletAddress())
         .startAt(dao.getStartAt())
         .endAt(dao.getEndAt())
+        .transactionHash(dao.getTransactionHash())
         .fileList(fileDaoList.stream().map(this::convertItemFileResponseModel)
             .collect(Collectors.toList()))
         .build();

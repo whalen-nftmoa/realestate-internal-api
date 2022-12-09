@@ -63,5 +63,7 @@ public class ItemBuyDetailDao {
   @JsonFormat(pattern = Constants.JSONFY_DATE_FORMAT)
   private LocalDateTime endAt;
 
+  private String transactionHash;
+
 
 }
