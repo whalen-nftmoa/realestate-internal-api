@@ -21,8 +21,10 @@
     WHERE 	ib.deleted_flag = false AND
       ib.used_flag = true AND
       i.current_quantity > 0 AND
-      ib.market_item_uid = #{request.marketItemUid} AND
-      i.member_uid = #{request.memberUid}
+      ib.market_item_uid = #{request.marketItemUid}
+    <if test="request.memberUid > 0">
+      AND i.member_uid = #{request.memberUid}
+    </if>
   </select>
 
   <select id="list" resultType="com.labshigh.realestate.internal.api.marketItem.dao.ItemBuyDetailDao">
@@ -82,8 +84,16 @@
     WHERE 	ib.deleted_flag = false AND
       ib.used_flag = true AND
       i.current_quantity > 0 AND
-      ib.market_item_uid = #{request.marketItemUid} AND
-      i.member_uid = #{request.memberUid}
+      ib.market_item_uid = #{request.marketItemUid}
+    <if test="request.memberUid > 0">
+        AND i.member_uid = #{request.memberUid}
+    </if>
+    <if test="request.searchValue != ''">
+      AND m.wallet_address LIKE CONCAT('%',#{request.searchValue},'%')
+    </if>
+    <if test="request.startDate != null and request.endDate != null">
+      AND ib.created_at BETWEEN #{request.startDate} AND #{request.endDate}
+    </if>
     ORDER BY ib.uid DESC
       LIMIT #{request.offsetAndRowCount.offset}, #{request.offsetAndRowCount.rowCount}
   </select>

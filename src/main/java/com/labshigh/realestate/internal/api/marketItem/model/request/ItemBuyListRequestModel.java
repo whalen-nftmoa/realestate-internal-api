@@ -4,8 +4,10 @@ import com.labshigh.realestate.internal.api.common.Constants;
 import com.labshigh.realestate.internal.api.common.utils.PageUtils;
 import com.labshigh.realestate.internal.api.common.utils.PageUtils.OffsetAndRowCount;
 import io.swagger.annotations.ApiModelProperty;
+import java.time.LocalDateTime;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.format.annotation.DateTimeFormat;
 
 @Getter
 @Setter
@@ -15,6 +17,17 @@ public class ItemBuyListRequestModel {
   private long marketItemUid;
   @ApiModelProperty(value = "memberUid")
   private long memberUid;
+
+  @ApiModelProperty(value = "지갑주소 검색 주소")
+  public String searchValue;
+
+  @ApiModelProperty(value = "시작 날짜")
+  @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+  private LocalDateTime startDate;
+
+  @ApiModelProperty(value = "종료 날짜")
+  @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+  private LocalDateTime endDate;
 
   @ApiModelProperty(value = "페이지")
   private int page = 1;
