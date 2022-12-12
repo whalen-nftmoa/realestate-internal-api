@@ -29,8 +29,8 @@ public class ItemListResponseModel {
   private String projectName;
   private int index;
   private String totalPrice;
-  private int quantity;
-  private int currentQuantity;
+  private long quantity;
+  private long currentQuantity;
   @JsonFormat(pattern = Constants.JSONFY_DATE_FORMAT)
   private LocalDateTime sellStartAt;
   @JsonFormat(pattern = Constants.JSONFY_DATE_FORMAT)
