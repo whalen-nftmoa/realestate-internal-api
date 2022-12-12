@@ -51,7 +51,7 @@ public class ItemDao {
   private String detail;
   private String tokenUri;
   private int itemKind;
-  private int index;
+  private long index;
 
 
 }

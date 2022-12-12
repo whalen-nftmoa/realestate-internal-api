@@ -22,8 +22,8 @@ public class MarketItemDetailResponseModel {
   private Boolean usedFlag;
 
   private long itemUid;
-  private int quantity;
-  private int currentQuantity;
+  private long quantity;
+  private long currentQuantity;
   @JsonFormat(pattern = Constants.JSONFY_DATE_FORMAT)
   private LocalDateTime startAt;
   @JsonFormat(pattern = Constants.JSONFY_DATE_FORMAT)
