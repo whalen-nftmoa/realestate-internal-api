@@ -18,10 +18,10 @@ public class ItemBuyListByMemberRequestValidator implements Validator {
   public void validate(Object target, Errors errors) {
     ItemBuyListRequestModel itemBuyListRequestModel = (ItemBuyListRequestModel) target;
 
-    if (itemBuyListRequestModel.getMemberUid() <= 0) {
-      errors.reject("memberUid.required",
-          String.format(Constants.MSG_REQUIRE_FIELD_ERROR, "memberUid"));
-    }
+//    if (itemBuyListRequestModel.getMemberUid() <= 0) {
+//      errors.reject("memberUid.required",
+//          String.format(Constants.MSG_REQUIRE_FIELD_ERROR, "memberUid"));
+//    }
 
     if (itemBuyListRequestModel.getPage() <= 0) {
       errors.reject("page.required", String.format(Constants.MSG_REQUIRE_FIELD_ERROR, "page"));

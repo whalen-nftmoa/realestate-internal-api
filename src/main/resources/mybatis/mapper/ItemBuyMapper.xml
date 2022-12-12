@@ -25,7 +25,7 @@
     <if test="request.memberUid > 0">
       AND i.member_uid = #{request.memberUid}
     </if>
-    <if test="request.searchValue != ''">
+    <if test="request.searchValue != null and request.searchValue != ''">
       AND m.wallet_address LIKE CONCAT('%',#{request.searchValue},'%')
     </if>
     <if test="request.startDate != null and request.endDate != null">
@@ -94,7 +94,7 @@
     <if test="request.memberUid > 0">
         AND i.member_uid = #{request.memberUid}
     </if>
-    <if test="request.searchValue != ''">
+    <if test="request.searchValue != null and request.searchValue != ''">
       AND m.wallet_address LIKE CONCAT('%',#{request.searchValue},'%')
     </if>
     <if test="request.startDate != null and request.endDate != null">
@@ -121,7 +121,7 @@
     <if test="request.memberUid > 0">
       AND i.member_uid = #{request.memberUid}
     </if>
-    <if test="request.searchValue != ''">
+    <if test="request.searchValue != null and request.searchValue != ''">
       AND m.wallet_address LIKE CONCAT('%',#{request.searchValue},'%')
     </if>
   </select>
@@ -187,11 +187,21 @@
       <if test="request.memberUid > 0">
         AND i.member_uid = #{request.memberUid}
       </if>
-      <if test="request.searchValue != ''">
+      <if test="request.searchValue != null and request.searchValue != ''">
         AND m.wallet_address LIKE CONCAT('%',#{request.searchValue},'%')
       </if>
 
-    ORDER BY ib.uid DESC
+    <choose>
+      <when test="request.sort != null and request.sort.name() == 'latest'">
+        ORDER BY ib.uid DESC
+      </when>
+      <when test="request.sort != null and request.sort.name() == 'buyCount'">
+        ORDER BY (mi.quantity - mi.current_quantity) DESC , ib.uid desc
+      </when>
+      <otherwise>
+        ORDER BY ib.uid DESC
+      </otherwise>
+    </choose>
       LIMIT #{request.offsetAndRowCount.offset}, #{request.offsetAndRowCount.rowCount}
   </select>
 

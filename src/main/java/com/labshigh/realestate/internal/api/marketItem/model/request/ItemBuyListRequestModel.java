@@ -29,6 +29,9 @@ public class ItemBuyListRequestModel {
   @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
   private LocalDateTime endDate;
 
+  @ApiModelProperty(value = "정렬")
+  public SortType sort;
+
   @ApiModelProperty(value = "페이지")
   private int page = 1;
 
@@ -45,5 +48,10 @@ public class ItemBuyListRequestModel {
   public void setSize(int size) {
     this.size = size;
     this.offsetAndRowCount = PageUtils.convertPageToOffset(page, size);
+  }
+
+  private enum SortType {
+    latest,
+    buyCount
   }
 }
