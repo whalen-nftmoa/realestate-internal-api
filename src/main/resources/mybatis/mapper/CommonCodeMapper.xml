@@ -65,7 +65,7 @@
            updated_at,
            deleted_flag,
            used_flag,
-           name,
+           case when #{request.lang} = '' OR #{request.lang} = 'en' THEN name ELSE name_kr END AS name,
            image,
            sort,
            parent_common_code_uid

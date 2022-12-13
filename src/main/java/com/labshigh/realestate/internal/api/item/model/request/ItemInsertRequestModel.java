@@ -18,8 +18,8 @@ public class ItemInsertRequestModel {
   private String imageUri;
   private String projectName;
   private String totalPrice;
-  private int quantity;
-  private int currentQuantity;
+  private long quantity;
+  private long currentQuantity;
   private int allocationDay;
   private String right;
   private String location;

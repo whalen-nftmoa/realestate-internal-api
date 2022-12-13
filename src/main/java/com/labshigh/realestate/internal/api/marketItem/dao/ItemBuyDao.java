@@ -29,5 +29,5 @@ public class ItemBuyDao {
   private String price;
   private String nftId;
   private String contractAddress;
-  private int index;
+  private long index;
 }

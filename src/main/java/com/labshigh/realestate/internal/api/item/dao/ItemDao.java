@@ -35,8 +35,8 @@ public class ItemDao {
   private String imageUri;
   private String projectName;
   private String totalPrice;
-  private int quantity;
-  private int currentQuantity;
+  private long quantity;
+  private long currentQuantity;
   private int allocationDay;
   private String right;
   private String location;
@@ -51,7 +51,7 @@ public class ItemDao {
   private String detail;
   private String tokenUri;
   private int itemKind;
-  private int index;
+  private long index;
 
 
 }

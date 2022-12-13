@@ -81,11 +81,11 @@ public class MarketItemService {
             || marketItemDetailDao.getEndAt().equals(now)))) {
       throw new ServiceException(Constants.MSG_MARKET_ITEM_END_DATE_BUY_ERROR);
     }
-    for (int idx = 0; idx < requestModel.getQuantity(); idx++) {
+    for (long idx = 0; idx < requestModel.getQuantity(); idx++) {
 
-      int index =
+      long index =
           marketItemDetailDao.getQuantity() - (marketItemDetailDao.getCurrentQuantity() - (idx
-              + 1));
+              + 1L));
 
       ItemDao itemDao = ItemDao.builder()
           .uid(marketItemDetailDao.getItemUid())
