@@ -168,4 +168,32 @@
     WHERE uid = #{uid}
   </update>
 
+  <update id="deleteItemBuy">
+    UPDATE  realestate.item_buy
+    SET     deleted_flag = true
+    WHERE   deleted_flag = false AND
+            market_item_uid = #{uid}
+  </update>
+
+  <update id="deleteItemFile">
+    UPDATE  realestate.item_file
+    SET     deleted_flag = true
+    WHERE   deleted_flag = false AND
+            item_uid = #{itemUid}
+  </update>
+
+  <update id="deleteMarketItem">
+    UPDATE  realestate.market_item
+    SET     deleted_flag = true
+    WHERE   deleted_flag = false AND
+      uid = #{uid}
+  </update>
+
+  <update id="deleteItem">
+    UPDATE  realestate.item
+    SET     deleted_flag = true
+    WHERE   deleted_flag = false AND
+      uid = #{itemUid}
+  </update>
+
 </mapper>

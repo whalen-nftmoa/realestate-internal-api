@@ -5,12 +5,14 @@ import com.labshigh.realestate.internal.api.common.Constants;
 import com.labshigh.realestate.internal.api.common.exceptions.ServiceException;
 import com.labshigh.realestate.internal.api.marketItem.model.request.ItemBuyInsertRequestModel;
 import com.labshigh.realestate.internal.api.marketItem.model.request.ItemBuyListRequestModel;
+import com.labshigh.realestate.internal.api.marketItem.model.request.MarketItemDeleteRequestModel;
 import com.labshigh.realestate.internal.api.marketItem.model.request.MarketItemDetailRequestModel;
 import com.labshigh.realestate.internal.api.marketItem.model.request.MarketItemListRequestModel;
 import com.labshigh.realestate.internal.api.marketItem.service.MarketItemService;
 import com.labshigh.realestate.internal.api.marketItem.validator.ItemBuyInsertRequestValidator;
 import com.labshigh.realestate.internal.api.marketItem.validator.ItemBuyListByMemberRequestValidator;
 import com.labshigh.realestate.internal.api.marketItem.validator.ItemBuyListRequestValidator;
+import com.labshigh.realestate.internal.api.marketItem.validator.MarketItemDeleteRequestValidator;
 import com.labshigh.realestate.internal.api.marketItem.validator.MarketItemDetailRequestValidator;
 import com.labshigh.realestate.internal.api.marketItem.validator.MarketItemListRequestValidator;
 import io.swagger.annotations.ApiOperation;
@@ -19,6 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -171,6 +174,38 @@ public class MarketItemController {
     } else {
       try {
         responseModel.setData(marketItemService.listItemBuyByMember(itemBuyListRequestModel));
+      } catch (ServiceException e) {
+        responseModel.setStatus(HttpStatus.PRECONDITION_FAILED.value());
+        responseModel.setMessage(e.getMessage());
+      } catch (Exception e) {
+        responseModel.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
+        responseModel.setMessage(HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase());
+        responseModel.error.setErrorCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
+        responseModel.error.setErrorMessage(e.getLocalizedMessage());
+      }
+    }
+    return responseModel.toResponse();
+  }
+
+  @ApiOperation("MarketItem 삭제")
+  @DeleteMapping(value = "/{marketItemUid}", produces = {Constants.RESPONSE_CONTENT_TYPE})
+  public ResponseEntity<String> deleteMarketItem(
+      @PathVariable(value = "marketItemUid") long marketItemUid,
+      @RequestBody MarketItemDeleteRequestModel marketItemDeleteRequestModel,
+      BindingResult bindingResult) {
+    ResponseModel responseModel = new ResponseModel();
+
+    marketItemDeleteRequestModel.setMarketItemUid(marketItemUid);
+
+    MarketItemDeleteRequestValidator.builder().build()
+        .validate(marketItemDeleteRequestModel, bindingResult);
+
+    if (bindingResult.hasErrors()) {
+      responseModel.setStatus(HttpStatus.PRECONDITION_FAILED.value());
+      responseModel.setMessage(bindingResult.getAllErrors().get(0).getDefaultMessage());
+    } else {
+      try {
+        marketItemService.deleteMarketItem(marketItemDeleteRequestModel);
       } catch (ServiceException e) {
         responseModel.setStatus(HttpStatus.PRECONDITION_FAILED.value());
         responseModel.setMessage(e.getMessage());

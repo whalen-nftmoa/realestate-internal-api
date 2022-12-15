@@ -26,5 +26,13 @@ public interface MarketItemMapper {
 
   MarketItemDetailDao detail(MarketItemDao dao);
 
+  void deleteItemBuy(MarketItemDetailDao dao);
+
+  void deleteItemFile(MarketItemDetailDao dao);
+
+  void deleteMarketItem(MarketItemDetailDao dao);
+
+  void deleteItem(MarketItemDetailDao dao);
+
 
 }
