@@ -1,8 +1,8 @@
 package com.labshigh.realestate.internal.api.item.validator;
 
-import com.labshigh.realestate.core.utils.StringUtils;
 import com.labshigh.realestate.internal.api.common.Constants;
 import com.labshigh.realestate.internal.api.item.model.request.MarketItemInsertRequestModel;
+import java.math.BigDecimal;
 import lombok.Builder;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
@@ -24,8 +24,7 @@ public class MarketItemInsertRequestValidator implements Validator {
           String.format(Constants.MSG_REQUIRE_FIELD_ERROR, "itemUid"));
     }
 
-    if (StringUtils.isEmpty(requestModel.getPrice())
-        || Double.parseDouble(requestModel.getPrice()) <= 0D) {
+    if (requestModel.getPrice().compareTo(BigDecimal.ONE) < 0) {
       errors.reject("price.required",
           String.format(Constants.MSG_REQUIRE_FIELD_ERROR, "price"));
     }

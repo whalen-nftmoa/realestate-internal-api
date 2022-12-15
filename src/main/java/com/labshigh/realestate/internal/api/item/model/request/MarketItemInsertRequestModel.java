@@ -1,5 +1,6 @@
 package com.labshigh.realestate.internal.api.item.model.request;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import lombok.Getter;
 import lombok.Setter;
@@ -17,5 +18,5 @@ public class MarketItemInsertRequestModel {
   @DateTimeFormat(iso = ISO.DATE)
   private LocalDate endAt;
   private String transactionHash;
-  private String price;
+  private BigDecimal price;
 }

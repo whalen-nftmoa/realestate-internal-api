@@ -2,6 +2,7 @@ package com.labshigh.realestate.internal.api.marketItem.model.response;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.labshigh.realestate.internal.api.common.Constants;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 import lombok.Builder;
@@ -28,9 +29,9 @@ public class MarketItemDetailResponseModel {
   private LocalDateTime startAt;
   @JsonFormat(pattern = Constants.JSONFY_DATE_FORMAT)
   private LocalDateTime endAt;
-  private String price;
-  private String usdPrice;
-  private String fogPrice;
+  private BigDecimal price;
+  private BigDecimal usdPrice;
+  private BigDecimal fogPrice;
   private String transactionHash;
   private String sellId;
   private String nftId;
@@ -43,9 +44,9 @@ public class MarketItemDetailResponseModel {
   private String statusName;
   private String imageUri;
   private String projectName;
-  private String totalPrice;
-  private String usdTotalPrice;
-  private String fogTotalPrice;
+  private BigDecimal totalPrice;
+  private BigDecimal usdTotalPrice;
+  private BigDecimal fogTotalPrice;
   private int allocationDay;
   private String right;
   private String location;

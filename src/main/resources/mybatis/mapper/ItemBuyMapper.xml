@@ -3,8 +3,8 @@
   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.labshigh.realestate.internal.api.marketItem.mapper.ItemBuyMapper">
   <insert id="insert" keyProperty="uid" parameterType="com.labshigh.realestate.internal.api.marketItem.dao.ItemBuyDao" useGeneratedKeys="true">
-    INSERT INTO realestate.item_buy (item_uid, market_item_uid, price, nft_id, contract_address, `index`)
-    VALUES (#{itemUid}, #{marketItemUid}, #{price}, #{nftId}, #{contractAddress}, #{index})
+    INSERT INTO realestate.item_buy (item_uid, market_item_uid, price, nft_id, contract_address, `index`, transaction_hash)
+    VALUES (#{itemUid}, #{marketItemUid}, #{price}, #{nftId}, #{contractAddress}, #{index}, #{transactionHash} )
   </insert>
 
   <select id="count" resultType="int">
@@ -170,7 +170,7 @@
             m.wallet_address,
             mi.start_at,
             mi.end_at,
-            mi.transaction_hash
+            ib.transaction_hash
     FROM realestate.item_buy AS ib
            LEFT OUTER JOIN realestate.item AS i ON ib.item_uid = i.uid AND i.deleted_flag = false AND i.used_flag = true
            LEFT OUTER JOIN realestate.`member` AS m ON i.member_uid = m.uid AND m.deleted_flag = false AND m.used_flag = true

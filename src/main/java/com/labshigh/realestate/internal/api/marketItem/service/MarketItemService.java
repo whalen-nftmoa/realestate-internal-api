@@ -110,6 +110,7 @@ public class MarketItemService {
           .marketItemUid(requestModel.getMarketItemUid())
           .itemUid(itemDao.getUid())
           .index(index)
+          .transactionHash(requestModel.getTransactionHash())
           .build();
       itemBuyMapper.insert(itemBuyDao);
     }
