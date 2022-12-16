@@ -111,7 +111,7 @@ public class MarketItemService {
           .marketItemUid(requestModel.getMarketItemUid())
           .itemUid(itemDao.getUid())
           .index(index)
-          .transactionHash(requestModel.getTransactionHash())
+          .transactionHash(requestModel.getTransactionHash().getHash())
           .build();
       itemBuyMapper.insert(itemBuyDao);
     }

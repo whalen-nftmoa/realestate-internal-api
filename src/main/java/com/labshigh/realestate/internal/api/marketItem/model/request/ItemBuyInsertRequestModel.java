@@ -18,7 +18,7 @@ public class ItemBuyInsertRequestModel {
   private int currentQuantity;
   private int index;
   private int itemKind;
-  private String transactionHash;
+  private TransactionHash transactionHash;
 
 
 }
