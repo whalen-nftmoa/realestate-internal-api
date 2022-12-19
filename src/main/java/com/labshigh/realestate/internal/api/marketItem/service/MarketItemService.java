@@ -74,13 +74,14 @@ public class MarketItemService {
     if (marketItemDetailDao.getMemberUid() == requestModel.getMemberUid()) {
       throw new ServiceException(Constants.MSG_MARKET_ITEM_MY_ITEM_BUY_ERROR);
     }
+    if (marketItemDetailDao.getStartAt() != null && marketItemDetailDao.getEndAt() != null) {
+      LocalDateTime now = LocalDateTime.now();
 
-    LocalDateTime now = LocalDateTime.now();
-
-    if (!(now.isAfter(marketItemDetailDao.getStartAt()) && (
-        now.isBefore(marketItemDetailDao.getEndAt())
-            || marketItemDetailDao.getEndAt().equals(now)))) {
-      throw new ServiceException(Constants.MSG_MARKET_ITEM_END_DATE_BUY_ERROR);
+      if (!(now.isAfter(marketItemDetailDao.getStartAt()) && (
+          now.isBefore(marketItemDetailDao.getEndAt())
+              || marketItemDetailDao.getEndAt().equals(now)))) {
+        throw new ServiceException(Constants.MSG_MARKET_ITEM_END_DATE_BUY_ERROR);
+      }
     }
     for (long idx = 0; idx < requestModel.getQuantity(); idx++) {
 
