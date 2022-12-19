@@ -9,6 +9,7 @@ import org.springframework.web.multipart.MultipartFile;
 public class CommonCodeInsertRequestModel {
 
   private String name;
+  private String nameKr;
   private MultipartFile image;
   private int sort;
   private boolean usedFlag;

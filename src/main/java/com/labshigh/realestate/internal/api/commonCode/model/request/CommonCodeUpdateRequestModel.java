@@ -10,6 +10,7 @@ public class CommonCodeUpdateRequestModel {
 
   private long commonCodeUid;
   private String name;
+  private String nameKr;
   private MultipartFile image;
   private int sort;
   private boolean usedFlag;

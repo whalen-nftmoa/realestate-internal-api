@@ -3,11 +3,12 @@
   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.labshigh.realestate.internal.api.commonCode.mapper.CommonCodeMapper">
   <insert id="insert" parameterType="com.labshigh.realestate.internal.api.commonCode.dao.CommonCodeDAO" useGeneratedKeys="true" keyProperty="uid">
-    INSERT INTO common_code (name, sort, used_flag, parent_common_code_uid) VALUES (#{name}, #{sort}, #{usedFlag}, #{parentCommonCodeUid})
+    INSERT INTO common_code (name, name_kr, sort, used_flag, parent_common_code_uid) VALUES (#{name}, #{nameKr},#{sort}, #{usedFlag}, #{parentCommonCodeUid})
   </insert>
 
   <update id="update" parameterType="com.labshigh.realestate.internal.api.commonCode.dao.CommonCodeDAO">
     UPDATE common_code SET name = #{name},
+                           name_kr = #{nameKr},
                            sort = #{sort},
                            used_flag = #{usedFlag}
     WHERE deleted_flag = false AND
@@ -66,6 +67,7 @@
            deleted_flag,
            used_flag,
            case when #{request.lang} IS NULL OR #{request.lang} = '' OR #{request.lang} = 'en' THEN name ELSE name_kr END AS name,
+           name_kr,
            image,
            sort,
            parent_common_code_uid
@@ -89,6 +91,7 @@
            deleted_flag,
            used_flag,
            name,
+           name_kr,
            image,
            sort,
            parent_common_code_uid

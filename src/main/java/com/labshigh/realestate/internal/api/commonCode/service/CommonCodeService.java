@@ -70,6 +70,7 @@ public class CommonCodeService {
 
     CommonCodeDAO commonCodeDAO = CommonCodeDAO.builder()
         .name(commonCodeInsertRequestModel.getName())
+        .nameKr(commonCodeInsertRequestModel.getNameKr())
         .sort(commonCodeInsertRequestModel.getSort())
         .usedFlag(commonCodeInsertRequestModel.isUsedFlag())
         .parentCommonCodeUid(commonCodeInsertRequestModel.getParentCommonCodeUid())
@@ -79,7 +80,8 @@ public class CommonCodeService {
 
     if (commonCodeInsertRequestModel.getImage() != null) {
 
-      String image = this._uploadPhoto(commonCodeInsertRequestModel.getImage(), commonCodeDAO.getUid());
+      String image = this._uploadPhoto(commonCodeInsertRequestModel.getImage(),
+          commonCodeDAO.getUid());
 
       commonCodeMapper.updatePhoto(CommonCodeDAO.builder()
           .uid(commonCodeDAO.getUid())
@@ -98,6 +100,7 @@ public class CommonCodeService {
     commonCodeMapper.update(CommonCodeDAO.builder()
         .uid(commonCodeUpdateRequestModel.getCommonCodeUid())
         .name(commonCodeUpdateRequestModel.getName())
+        .nameKr(commonCodeUpdateRequestModel.getNameKr())
         .sort(commonCodeUpdateRequestModel.getSort())
         .usedFlag(commonCodeUpdateRequestModel.isUsedFlag())
         .build());
@@ -131,7 +134,7 @@ public class CommonCodeService {
 
     int totalCount = commonCodeMapper.count(commonCodeListRequestModel);
 
-    if(totalCount <= 0) {
+    if (totalCount <= 0) {
       return CommonCodeListResponseModel.builder()
           .list(Collections.emptyList())
           .totalCount(totalCount)
@@ -143,7 +146,6 @@ public class CommonCodeService {
     List<CommonCodeResponseModel> commonCodeResponseModelList = commonCodeDAOList.stream()
         .map(commonCodeDAO -> this._getByDao(commonCodeDAO))
         .collect(Collectors.toList());
-
 
     return CommonCodeListResponseModel.builder()
         .list(commonCodeResponseModelList)
@@ -173,6 +175,7 @@ public class CommonCodeService {
         .deletedFlag(commonCodeDAO.isDeletedFlag())
         .usedFlag(commonCodeDAO.isUsedFlag())
         .name(commonCodeDAO.getName())
+        .nameKr(commonCodeDAO.getNameKr())
         .image(commonCodeDAO.getImage())
         .sort(commonCodeDAO.getSort())
         .parentCommonCodeUid(commonCodeDAO.getParentCommonCodeUid())
@@ -185,7 +188,8 @@ public class CommonCodeService {
     // S3 client
     final AmazonS3 s3 = AmazonS3ClientBuilder.standard()
         .withEndpointConfiguration(new AwsClientBuilder.EndpointConfiguration(s3EndPoint, s3Region))
-        .withCredentials(new AWSStaticCredentialsProvider(new BasicAWSCredentials(ncloudAccessKey, ncloudSecretKey)))
+        .withCredentials(new AWSStaticCredentialsProvider(
+            new BasicAWSCredentials(ncloudAccessKey, ncloudSecretKey)))
         .build();
 
     String bucketName = s3Bucket;
@@ -196,7 +200,8 @@ public class CommonCodeService {
     ObjectMetadata objectMetadata = new ObjectMetadata();
     objectMetadata.setContentLength(0L);
     objectMetadata.setContentType("application/x-directory");
-    PutObjectRequest putObjectRequest = new PutObjectRequest(bucketName, folderName, new ByteArrayInputStream(new byte[0]), objectMetadata);
+    PutObjectRequest putObjectRequest = new PutObjectRequest(bucketName, folderName,
+        new ByteArrayInputStream(new byte[0]), objectMetadata);
 
     try {
       s3.putObject(putObjectRequest);
@@ -206,14 +211,16 @@ public class CommonCodeService {
       e.printStackTrace();
 
       throw new AmazonS3Exception(e.getErrorMessage());
-    } catch(SdkClientException e) {
+    } catch (SdkClientException e) {
       e.printStackTrace();
 
       throw new SdkClientException(e.getMessage());
     }
 
     // create local file
-    String objectName = UUID.randomUUID().toString().replace("-", "") + "." + photo.getOriginalFilename().substring(photo.getOriginalFilename().lastIndexOf(".") + 1);
+    String objectName =
+        UUID.randomUUID().toString().replace("-", "") + "." + photo.getOriginalFilename()
+            .substring(photo.getOriginalFilename().lastIndexOf(".") + 1);
     File tmpFile = new File("/tmp/" + objectName);
 
     Files.copy(photo.getInputStream(), tmpFile.toPath(),
@@ -228,7 +235,7 @@ public class CommonCodeService {
       e.printStackTrace();
 
       throw new AmazonS3Exception(e.getErrorMessage());
-    } catch(SdkClientException e) {
+    } catch (SdkClientException e) {
       e.printStackTrace();
 
       throw new SdkClientException(e.getMessage());
@@ -250,7 +257,7 @@ public class CommonCodeService {
       e.printStackTrace();
 
       throw new AmazonS3Exception(e.getErrorMessage());
-    } catch(SdkClientException e) {
+    } catch (SdkClientException e) {
       e.printStackTrace();
 
       throw new SdkClientException(e.getMessage());

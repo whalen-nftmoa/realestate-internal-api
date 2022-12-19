@@ -9,7 +9,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-@Getter @Setter
+@Getter
+@Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
@@ -24,6 +25,7 @@ public class CommonCodeDAO {
   private boolean usedFlag;
 
   private String name;
+  private String nameKr;
   private String image;
   private int sort;
   private Long parentCommonCodeUid;

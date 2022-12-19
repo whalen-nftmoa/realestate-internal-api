@@ -7,7 +7,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
-@Getter @Setter
+@Getter
+@Setter
 @Builder
 public class CommonCodeResponseModel {
 
@@ -20,6 +21,7 @@ public class CommonCodeResponseModel {
   private boolean usedFlag;
 
   private String name;
+  private String nameKr;
   private String image;
   private int sort;
   private Long parentCommonCodeUid;
