@@ -19,6 +19,7 @@ import com.labshigh.realestate.internal.api.item.model.response.ItemListResponse
 import com.labshigh.realestate.internal.api.marketItem.dao.MarketItemDao;
 import com.labshigh.realestate.internal.api.marketItem.mapper.MarketItemMapper;
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -74,6 +75,12 @@ public class ItemService {
   @Transactional
   public ItemDetailResponseModel insert(ItemInsertRequestModel requestModel) throws IOException {
 
+    LocalDateTime approvalAt = null;
+
+    if (requestModel.getApprovalAt() != null) {
+      approvalAt = requestModel.getApprovalAt().atTime(0, 0, 0);
+    }
+
     ItemDao dao = ItemDao.builder()
         .memberUid(requestModel.getMemberUid())
         .allocationUid(requestModel.getAllocationUid())
@@ -92,7 +99,7 @@ public class ItemService {
         .scale(requestModel.getScale())
         .purpose(requestModel.getPurpose())
         .companyName(requestModel.getCompanyName())
-        .approvalAt(requestModel.getApprovalAt().atTime(0, 0, 0))
+        .approvalAt(approvalAt)
         .websiteUri(requestModel.getWebsiteUri())
         .detail(requestModel.getDetail())
         .itemFiles(requestModel.getItemFiles())
@@ -137,12 +144,20 @@ public class ItemService {
       throw new ServiceException(Constants.MSG_ITEM_MEMBER_ERROR);
     }
 
+    LocalDateTime startAt = null;
+    LocalDateTime endAt = null;
+
+    if (requestModel.getStartAt() != null && requestModel.getEndAt() != null) {
+      startAt = requestModel.getStartAt().atTime(0, 0, 0);
+      endAt = requestModel.getEndAt().atTime(23, 59, 59);
+    }
+
     MarketItemDao marketItemDao = MarketItemDao.builder()
         .itemUid(dao.getUid())
         .quantity(dao.getQuantity())
         .currentQuantity(dao.getQuantity())
-        .startAt(requestModel.getStartAt().atTime(0, 0, 0))
-        .endAt(requestModel.getEndAt().atTime(23, 59, 59))
+        .startAt(startAt)
+        .endAt(endAt)
         .price(requestModel.getPrice())
         .transactionHash(requestModel.getTransactionHash())
         .build();
