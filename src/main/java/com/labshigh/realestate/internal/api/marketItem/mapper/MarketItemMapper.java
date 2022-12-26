@@ -2,6 +2,7 @@ package com.labshigh.realestate.internal.api.marketItem.mapper;
 
 import com.labshigh.realestate.internal.api.marketItem.dao.MarketItemDao;
 import com.labshigh.realestate.internal.api.marketItem.dao.MarketItemDetailDao;
+import com.labshigh.realestate.internal.api.marketItem.dao.MarketItemDetailTableDao;
 import com.labshigh.realestate.internal.api.marketItem.dao.SellMemberDao;
 import com.labshigh.realestate.internal.api.marketItem.model.request.MarketItemListRequestModel;
 import java.util.List;
@@ -15,6 +16,8 @@ public interface MarketItemMapper {
 
   void insert(MarketItemDao dao);
 
+  void insertMarketItemDetail(MarketItemDetailTableDao dao);
+
   int countMarketItem(@Param(value = "request") MarketItemListRequestModel requestModel);
 
   List<MarketItemDetailDao> listMarketItem(
@@ -23,6 +26,8 @@ public interface MarketItemMapper {
   List<SellMemberDao> listSellMember();
 
   void updateCurrentQuantity(MarketItemDao dao);
+
+  void updateCancelMarketItem(MarketItemDao dao);
 
   MarketItemDetailDao detail(MarketItemDao dao);
 

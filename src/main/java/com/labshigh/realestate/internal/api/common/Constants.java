@@ -103,6 +103,7 @@ public class Constants {
   // Item
   public static final String MSG_ITEM_QUANTITY_ERROR = "수량이 0 이하 일수 없습니다.";
   public static final String MSG_ITEM_MEMBER_ERROR = "본인이 생성 한 아이템만 판매가 가능합니다.";
+  public static final String MSG_ITEM_BUY_MEMBER_ERROR = "본인이 구매 한 아이템만 판매가 가능합니다.";
   public static final String MSG_ITEM_BUY_CURRENT_QUANTITY_ERROR = "판매 수량보다 구매하려는 수량이 많을 수 없습니다.";
 
   //Market Item

@@ -6,6 +6,13 @@
     INSERT INTO realestate.market_item (item_uid, quantity, current_quantity, start_at, end_at, price, transaction_hash)
     VALUES(#{itemUid}, #{quantity}, #{currentQuantity}, #{startAt}, #{endAt}, #{price} ,#{transactionHash})
   </insert>
+
+  <insert id="insertMarketItemDetail" parameterType="com.labshigh.realestate.internal.api.marketItem.dao.MarketItemDetailTableDao" useGeneratedKeys="true">
+    INSERT INTO realestate.market_item_detail(market_item_uid, item_buy_uid)
+    VALUES(#{marketItemUid}, #{itemBuyUid})
+  </insert>
+
+
   <select id="countMarketItem" resultType="int">
     SELECT 	COUNT(*)
     FROM realestate.market_item AS mi
@@ -167,6 +174,14 @@
     SET current_quantity = current_quantity - #{currentQuantity}
     WHERE uid = #{uid}
   </update>
+
+  <update id="updateCancelMarketItem">
+    UPDATE realestate.market_item
+    SET sell_flag = true
+    WHERE uid = #{uid}
+  </update>
+
+
 
   <update id="deleteItemBuy">
     UPDATE  realestate.item_buy

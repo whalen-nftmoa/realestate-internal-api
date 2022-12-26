@@ -16,8 +16,12 @@ import com.labshigh.realestate.internal.api.item.model.request.ItemListRequestMo
 import com.labshigh.realestate.internal.api.item.model.request.MarketItemInsertRequestModel;
 import com.labshigh.realestate.internal.api.item.model.response.ItemDetailResponseModel;
 import com.labshigh.realestate.internal.api.item.model.response.ItemListResponseModel;
+import com.labshigh.realestate.internal.api.marketItem.dao.ItemBuyDetailDao;
 import com.labshigh.realestate.internal.api.marketItem.dao.MarketItemDao;
+import com.labshigh.realestate.internal.api.marketItem.dao.MarketItemDetailTableDao;
+import com.labshigh.realestate.internal.api.marketItem.mapper.ItemBuyMapper;
 import com.labshigh.realestate.internal.api.marketItem.mapper.MarketItemMapper;
+import com.labshigh.realestate.internal.api.marketItem.model.request.ItemBuyListByUidRequestModel;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.Collections;
@@ -46,6 +50,9 @@ public class ItemService {
   private ItemFileMapper itemFileMapper;
   @Autowired
   private MarketItemMapper marketItemMapper;
+
+  @Autowired
+  private ItemBuyMapper itemBuyMapper;
 
   @Autowired
   private FileUploadUtils fileUploadUtils;
@@ -129,6 +136,49 @@ public class ItemService {
       );
     }
     return convertItemDetailResponseModel(dao);
+  }
+
+  @Transactional
+  public MarketItemDao insertResellMarketItem(MarketItemInsertRequestModel requestModel) {
+    List<ItemBuyDetailDao> itemBuyDetailDaoList = itemBuyMapper.listByUid(
+        ItemBuyListByUidRequestModel.builder()
+            .itemBuyUidList(requestModel.getItemBuyUidList())
+            .marketItemUid(requestModel.getMarketItemUid())
+            .build());
+
+    if (itemBuyDetailDaoList.size() != requestModel.getItemBuyUidList().size()) {
+      throw new ServiceException(Constants.MSG_NO_DATA);
+    }
+
+    if (itemBuyDetailDaoList.stream()
+        .anyMatch(v -> v.getMemberUid() != requestModel.getMemberUid())) {
+      throw new ServiceException(Constants.MSG_ITEM_BUY_MEMBER_ERROR);
+    }
+
+    MarketItemDao marketItemDao = MarketItemDao.builder()
+        .itemUid(0) // 재판매 시 여러 아이템이 하나의 판매로 되기 때문에 바라보는 아이템이 없다.
+        .quantity(itemBuyDetailDaoList.size())
+        .currentQuantity(itemBuyDetailDaoList.size())
+        .price(requestModel.getPrice())
+        .transactionHash(requestModel.getTransactionHash())
+        .build();
+
+    marketItemMapper.insert(marketItemDao);
+
+    for (ItemBuyDetailDao dao : itemBuyDetailDaoList) {
+      //마켓아이템 디테일 테이블에 데이터 인서트
+      marketItemMapper.insertMarketItemDetail(MarketItemDetailTableDao.builder()
+          .itemBuyUid(dao.getUid())
+          .marketItemUid(marketItemDao.getUid())
+          .build());
+
+      //판매 한 아이템들의 구매아이템 수량을 차감한다.
+      itemMapper.updateItemCurrentQuantity(ItemDao.builder()
+          .uid(dao.getItemUid())
+          .currentQuantity(-1)
+          .build());
+    }
+    return marketItemDao;
   }
 
   @Transactional

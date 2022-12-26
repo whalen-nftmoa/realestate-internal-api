@@ -8,6 +8,7 @@ import com.labshigh.realestate.internal.api.item.model.request.MarketItemInsertR
 import com.labshigh.realestate.internal.api.item.service.ItemService;
 import com.labshigh.realestate.internal.api.item.validator.ItemInsertRequestValidator;
 import com.labshigh.realestate.internal.api.item.validator.MarketItemInsertRequestValidator;
+import com.labshigh.realestate.internal.api.item.validator.MarketItemReSellInsertRequestValidator;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -82,4 +83,35 @@ public class ItemController {
     }
     return responseModel.toResponse();
   }
+
+  @ApiOperation("Item 재판매 정보 등록")
+  @PostMapping(value = "/marketItem/{marketItemUid}/resell", produces = {
+      Constants.RESPONSE_CONTENT_TYPE})
+  public ResponseEntity<String> insertResellMarketItem(
+      @RequestBody MarketItemInsertRequestModel marketItemInsertRequestModel,
+      BindingResult bindingResult) {
+    ResponseModel responseModel = new ResponseModel();
+
+    MarketItemReSellInsertRequestValidator.builder().build()
+        .validate(marketItemInsertRequestModel, bindingResult);
+
+    if (bindingResult.hasErrors()) {
+      responseModel.setStatus(HttpStatus.PRECONDITION_FAILED.value());
+      responseModel.setMessage(bindingResult.getAllErrors().get(0).getDefaultMessage());
+    } else {
+      try {
+        responseModel.setData(itemService.insertResellMarketItem(marketItemInsertRequestModel));
+      } catch (ServiceException e) {
+        responseModel.setStatus(HttpStatus.PRECONDITION_FAILED.value());
+        responseModel.setMessage(e.getMessage());
+      } catch (Exception e) {
+        responseModel.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
+        responseModel.setMessage(HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase());
+        responseModel.error.setErrorCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
+        responseModel.error.setErrorMessage(e.getLocalizedMessage());
+      }
+    }
+    return responseModel.toResponse();
+  }
+
 }
