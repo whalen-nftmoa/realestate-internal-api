@@ -272,6 +272,20 @@
       #{uid}
     </foreach>
     AND ib.market_item_uid = #{marketItemUid}
+    <if test="memberUid > 0">
+      AND i.member_uid = #{memberUid}
+    </if>
+    <choose>
+      <when test="request.sort != null and request.sort.name() == 'lowPrice'">
+        ORDER BY ib.price ASC
+      </when>
+      <when test="request.sort != null and request.sort.name() == 'highPrice'">
+        ORDER BY ib.price DESC
+      </when>
+      <otherwise>
+        ORDER BY ib.uid DESC
+      </otherwise>
+    </choose>
   </select>
 
 

@@ -15,6 +15,7 @@ import com.labshigh.realestate.internal.api.marketItem.dao.SellMemberDao;
 import com.labshigh.realestate.internal.api.marketItem.mapper.ItemBuyMapper;
 import com.labshigh.realestate.internal.api.marketItem.mapper.MarketItemMapper;
 import com.labshigh.realestate.internal.api.marketItem.model.request.ItemBuyInsertRequestModel;
+import com.labshigh.realestate.internal.api.marketItem.model.request.ItemBuyListByUidRequestModel;
 import com.labshigh.realestate.internal.api.marketItem.model.request.ItemBuyListRequestModel;
 import com.labshigh.realestate.internal.api.marketItem.model.request.MarketItemDeleteRequestModel;
 import com.labshigh.realestate.internal.api.marketItem.model.request.MarketItemDetailRequestModel;
@@ -147,6 +148,16 @@ public class MarketItemService {
     responseListModel.setList(responseModelList);
     return responseListModel;
   }
+
+  public List<ItemBuyListResponseModel> listItemByMember(
+      ItemBuyListByUidRequestModel requestModel) {
+    List<ItemBuyDetailDao> dao = itemBuyMapper.listByUid(requestModel);
+
+    return dao.stream().map(this::convertItemBuyListResponseModel)
+        .collect(Collectors.toList());
+
+  }
+
 
   public ResponseListModel listItemBuyByMember(ItemBuyListRequestModel requestModel) {
     ResponseListModel responseListModel = new ResponseListModel();

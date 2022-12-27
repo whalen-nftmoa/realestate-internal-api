@@ -13,6 +13,18 @@ public class ItemBuyListByUidRequestModel {
 
   @ApiModelProperty(value = "marketItemUid")
   private long marketItemUid;
+  @ApiModelProperty(value = "memberUid")
+  private long memberUid;
   @ApiModelProperty(value = "itemBuyUidList")
   private List<Long> itemBuyUidList;
+
+  @ApiModelProperty(value = "정렬")
+  private SortType sort;
+
+  public enum SortType {
+    lowPrice,
+    highPrice
+  }
+
 }
+
