@@ -15,7 +15,7 @@ import lombok.Setter;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class MarketItemDao {
+public class MarketItemResellDao {
 
   private long uid;
   @JsonFormat(pattern = Constants.JSONFY_DATE_FORMAT)
@@ -24,18 +24,20 @@ public class MarketItemDao {
   private LocalDateTime updatedAt;
   private boolean deletedFlag;
   private Boolean usedFlag;
-
-  private long itemUid;
   private long quantity;
   private long currentQuantity;
-  @JsonFormat(pattern = Constants.JSONFY_DATE_FORMAT)
-  private LocalDateTime startAt;
-  @JsonFormat(pattern = Constants.JSONFY_DATE_FORMAT)
-  private LocalDateTime endAt;
+
   private BigDecimal price;
+  private BigDecimal usdPrice;
+  private BigDecimal fogPrice;
   private String transactionHash;
   private String sellId;
   private String nftId;
   private int mintingStatus;
+  private BigDecimal totalPrice;
+  private BigDecimal usdTotalPrice;
+  private BigDecimal fogTotalPrice;
+  private String indexName;
+  private String walletAddress;
   private long firstMarketItemUid;
 }

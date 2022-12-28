@@ -2,6 +2,7 @@ package com.labshigh.realestate.internal.api.marketItem.dao;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.labshigh.realestate.internal.api.common.Constants;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -23,10 +24,14 @@ public class MarketItemDetailTableDao {
   private LocalDateTime updatedAt;
   private boolean deletedFlag;
   private Boolean usedFlag;
-
   private long marketItemUid;
   private long itemBuyUid;
-
   private boolean sellFlag;
 
+  private long itemUid;
+  private String imageUri;
+  private BigDecimal price;
+  private BigDecimal usdPrice;
+  private BigDecimal fogPrice;
+  private String indexName;
 }

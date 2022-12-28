@@ -11,20 +11,28 @@ import com.labshigh.realestate.internal.api.marketItem.dao.ItemBuyDao;
 import com.labshigh.realestate.internal.api.marketItem.dao.ItemBuyDetailDao;
 import com.labshigh.realestate.internal.api.marketItem.dao.MarketItemDao;
 import com.labshigh.realestate.internal.api.marketItem.dao.MarketItemDetailDao;
+import com.labshigh.realestate.internal.api.marketItem.dao.MarketItemDetailTableDao;
+import com.labshigh.realestate.internal.api.marketItem.dao.MarketItemResellDao;
 import com.labshigh.realestate.internal.api.marketItem.dao.SellMemberDao;
 import com.labshigh.realestate.internal.api.marketItem.mapper.ItemBuyMapper;
+import com.labshigh.realestate.internal.api.marketItem.mapper.MarketItemDetailMapper;
 import com.labshigh.realestate.internal.api.marketItem.mapper.MarketItemMapper;
 import com.labshigh.realestate.internal.api.marketItem.model.request.ItemBuyInsertRequestModel;
 import com.labshigh.realestate.internal.api.marketItem.model.request.ItemBuyListByUidRequestModel;
 import com.labshigh.realestate.internal.api.marketItem.model.request.ItemBuyListRequestModel;
 import com.labshigh.realestate.internal.api.marketItem.model.request.MarketItemDeleteRequestModel;
+import com.labshigh.realestate.internal.api.marketItem.model.request.MarketItemDetailListRequestModel;
 import com.labshigh.realestate.internal.api.marketItem.model.request.MarketItemDetailRequestModel;
 import com.labshigh.realestate.internal.api.marketItem.model.request.MarketItemListRequestModel;
+import com.labshigh.realestate.internal.api.marketItem.model.request.MarketItemResellListRequestModel;
 import com.labshigh.realestate.internal.api.marketItem.model.response.ItemBuyListResponseModel;
 import com.labshigh.realestate.internal.api.marketItem.model.response.ItemBuyResponseModel;
 import com.labshigh.realestate.internal.api.marketItem.model.response.ItemFileResponseModel;
+import com.labshigh.realestate.internal.api.marketItem.model.response.MarketItemDetailListModel;
+import com.labshigh.realestate.internal.api.marketItem.model.response.MarketItemDetailListResponseModel;
 import com.labshigh.realestate.internal.api.marketItem.model.response.MarketItemDetailResponseModel;
 import com.labshigh.realestate.internal.api.marketItem.model.response.MarketItemListResponseModel;
+import com.labshigh.realestate.internal.api.marketItem.model.response.MarketItemResellResponseModel;
 import com.labshigh.realestate.internal.api.marketItem.model.response.SellMemberResponseModel;
 import java.time.LocalDateTime;
 import java.util.Collections;
@@ -47,6 +55,8 @@ public class MarketItemService {
 
   @Autowired
   private MarketItemMapper marketItemMapper;
+  @Autowired
+  private MarketItemDetailMapper marketItemDetailMapper;
   @Autowired
   private ItemMapper itemMapper;
   @Autowired
@@ -158,6 +168,15 @@ public class MarketItemService {
 
   }
 
+  public List<MarketItemResellResponseModel> listMarketItemResell(
+      MarketItemResellListRequestModel requestModel) {
+
+    List<MarketItemResellDao> daoList = marketItemMapper.listMarketItemResell(requestModel);
+
+    return daoList.stream().map(this::convertMarketItemResellResponseModel)
+        .collect(Collectors.toList());
+  }
+
 
   public ResponseListModel listItemBuyByMember(ItemBuyListRequestModel requestModel) {
     ResponseListModel responseListModel = new ResponseListModel();
@@ -219,6 +238,24 @@ public class MarketItemService {
     return responseModel;
   }
 
+  public MarketItemDetailListResponseModel listMarketItemDetail(
+      MarketItemDetailListRequestModel requestModel) {
+
+    List<MarketItemDetailTableDao> daoList = marketItemDetailMapper.list(requestModel);
+
+    List<MarketItemDetailListModel> detailList = daoList.stream()
+        .map(this::convertMarketItemDetailListModel).collect(Collectors.toList());
+
+    List<ItemFileDao> fileDaoList = itemFileMapper.listFile(
+        ItemFileDao.builder().itemUid(daoList.get(0).getItemUid()).build());
+
+    return MarketItemDetailListResponseModel.builder().detailList(detailList).fileList(
+        fileDaoList.stream().map(this::convertItemFileResponseModel).collect(Collectors.toList())
+    ).build();
+
+
+  }
+
   public List<SellMemberResponseModel> listSellMember() {
     List<SellMemberDao> sellMemberDaoList = marketItemMapper.listSellMember();
 
@@ -238,6 +275,51 @@ public class MarketItemService {
     marketItemMapper.deleteItem(dao);
 
 
+  }
+
+  private MarketItemDetailListModel convertMarketItemDetailListModel(MarketItemDetailTableDao dao) {
+    return MarketItemDetailListModel.builder()
+        .uid(dao.getUid())
+        .createdAt(dao.getCreatedAt())
+        .updatedAt(dao.getUpdatedAt())
+        .deletedFlag(dao.isDeletedFlag())
+        .usedFlag(dao.getUsedFlag())
+        .marketItemUid(dao.getMarketItemUid())
+        .itemBuyUid(dao.getItemBuyUid())
+        .sellFlag(dao.isSellFlag())
+        .itemUid(dao.getItemUid())
+        .imageUri("https://" + s3EndPoint + "/" + s3NftBucket + dao.getImageUri())
+        .price(dao.getPrice())
+        .usdPrice(dao.getUsdPrice())
+        .fogPrice(dao.getFogPrice())
+        .indexName(dao.getIndexName())
+        .build();
+
+  }
+
+  private MarketItemResellResponseModel convertMarketItemResellResponseModel(
+      MarketItemResellDao dao) {
+    return MarketItemResellResponseModel.builder()
+        .uid(dao.getUid())
+        .createdAt(dao.getCreatedAt())
+        .updatedAt(dao.getUpdatedAt())
+        .deletedFlag(dao.isDeletedFlag())
+        .usedFlag(dao.getUsedFlag())
+        .quantity(dao.getQuantity())
+        .currentQuantity(dao.getCurrentQuantity())
+        .price(dao.getPrice())
+        .usdPrice(dao.getUsdPrice())
+        .fogPrice(dao.getFogPrice())
+        .transactionHash(dao.getTransactionHash())
+        .sellId(dao.getSellId())
+        .nftId(dao.getNftId())
+        .mintingStatus(dao.getMintingStatus())
+        .totalPrice(dao.getTotalPrice())
+        .usdTotalPrice(dao.getUsdTotalPrice())
+        .fogTotalPrice(dao.getTotalPrice())
+        .indexName(dao.getIndexName())
+        .walletAddress(dao.getWalletAddress())
+        .build();
   }
 
   private SellMemberResponseModel convertSellMemberResponseModel(SellMemberDao dao) {

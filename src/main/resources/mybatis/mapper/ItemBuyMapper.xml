@@ -92,7 +92,7 @@
     WHERE 	ib.deleted_flag = false AND
       ib.used_flag = true AND
       i.current_quantity > 0 AND
-      ib.market_item_uid = #{request.marketItemUid}
+    (ib.market_item_uid = #{marketItemUid} OR mi.first_market_item_uid = #{marketItemUid})
     <if test="request.memberUid > 0">
         AND i.member_uid = #{request.memberUid}
     </if>
@@ -273,16 +273,18 @@
         #{uid}
       </foreach>
     </if>
-    AND ib.market_item_uid = #{marketItemUid}
+    <if test="marketItemUid > 0">
+        AND (ib.market_item_uid = #{marketItemUid} OR mi.first_market_item_uid = #{marketItemUid})
+    </if>
     <if test="memberUid > 0">
       AND i.member_uid = #{memberUid}
     </if>
     <choose>
       <when test="sort != null and sort.name() == 'lowPrice'">
-        ORDER BY ib.price ASC
+        ORDER BY ib.price ASC, ib.uid DESC
       </when>
       <when test="sort != null and sort.name() == 'highPrice'">
-        ORDER BY ib.price DESC
+        ORDER BY ib.price DESC, ib.uid DESC
       </when>
       <otherwise>
         ORDER BY ib.uid DESC

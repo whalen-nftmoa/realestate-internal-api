@@ -15,15 +15,19 @@ import com.labshigh.realestate.internal.api.item.model.request.ItemInsertRequest
 import com.labshigh.realestate.internal.api.item.model.request.ItemListRequestModel;
 import com.labshigh.realestate.internal.api.item.model.request.MarketItemInsertRequestModel;
 import com.labshigh.realestate.internal.api.item.model.response.ItemDetailResponseModel;
+import com.labshigh.realestate.internal.api.item.model.response.ItemFileMetaDataModel;
 import com.labshigh.realestate.internal.api.item.model.response.ItemListResponseModel;
+import com.labshigh.realestate.internal.api.item.model.response.ItemMetaDataModel;
 import com.labshigh.realestate.internal.api.marketItem.dao.ItemBuyDetailDao;
 import com.labshigh.realestate.internal.api.marketItem.dao.MarketItemDao;
 import com.labshigh.realestate.internal.api.marketItem.dao.MarketItemDetailTableDao;
 import com.labshigh.realestate.internal.api.marketItem.mapper.ItemBuyMapper;
+import com.labshigh.realestate.internal.api.marketItem.mapper.MarketItemDetailMapper;
 import com.labshigh.realestate.internal.api.marketItem.mapper.MarketItemMapper;
 import com.labshigh.realestate.internal.api.marketItem.model.request.ItemBuyListByUidRequestModel;
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -50,6 +54,9 @@ public class ItemService {
   private ItemFileMapper itemFileMapper;
   @Autowired
   private MarketItemMapper marketItemMapper;
+
+  @Autowired
+  private MarketItemDetailMapper marketItemDetailMapper;
 
   @Autowired
   private ItemBuyMapper itemBuyMapper;
@@ -112,12 +119,29 @@ public class ItemService {
         .itemFiles(requestModel.getItemFiles())
         .build();
 
-    fileCategoryNameBind(dao.getItemFiles());
+    ItemMetaDataModel metaDataModel = ItemMetaDataModel.builder()
+        .imageUri(
+            requestModel.getImageUri())
+        .projectName(requestModel.getProjectName())
+        .allocationDay(requestModel.getAllocationDay())
+        .right(requestModel.getRight())
+        .location(requestModel.getLocation())
+        .coreValue(requestModel.getCoreValue())
+        .area(requestModel.getArea())
+        .scale(requestModel.getScale())
+        .purpose(requestModel.getPurpose())
+        .companyName(requestModel.getCompanyName())
+        .approvalAt(approvalAt)
+        .websiteUri(requestModel.getWebsiteUri())
+        .detail(requestModel.getDetail())
+        .build();
+
+    metaDataModel.setItemFiles(fileCategoryNameBind(dao.getItemFiles()));
 
     String pathName = requestModel.getImageUri()
         .replace("https://" + s3EndPoint + "/" + s3NftBucket, "").split("/")[2];
     //metadata.Json 업로드
-    String tokenUri = fileUploadUtils.uploadByObject(dao, pathName, FileType.nft);
+    String tokenUri = fileUploadUtils.uploadByObject(metaDataModel, pathName, FileType.nft);
 
     dao.setTokenUri(tokenUri.replace("https://" + s3EndPoint + "/" + s3NftBucket, ""));
 
@@ -143,7 +167,6 @@ public class ItemService {
     List<ItemBuyDetailDao> itemBuyDetailDaoList = itemBuyMapper.listByUid(
         ItemBuyListByUidRequestModel.builder()
             .itemBuyUidList(requestModel.getItemBuyUidList())
-            .marketItemUid(requestModel.getMarketItemUid())
             .build());
 
     if (itemBuyDetailDaoList.size() != requestModel.getItemBuyUidList().size()) {
@@ -161,13 +184,14 @@ public class ItemService {
         .currentQuantity(itemBuyDetailDaoList.size())
         .price(requestModel.getPrice())
         .transactionHash(requestModel.getTransactionHash())
+        .firstMarketItemUid(requestModel.getMarketItemUid())
         .build();
 
     marketItemMapper.insert(marketItemDao);
 
     for (ItemBuyDetailDao dao : itemBuyDetailDaoList) {
       //마켓아이템 디테일 테이블에 데이터 인서트
-      marketItemMapper.insertMarketItemDetail(MarketItemDetailTableDao.builder()
+      marketItemDetailMapper.insertMarketItemDetail(MarketItemDetailTableDao.builder()
           .itemBuyUid(dao.getUid())
           .marketItemUid(marketItemDao.getUid())
           .build());
@@ -253,7 +277,9 @@ public class ItemService {
         .build();
   }
 
-  private void fileCategoryNameBind(List<ItemFileInsertRequestModel> fileRequestModel) {
+  private List<ItemFileMetaDataModel> fileCategoryNameBind(
+      List<ItemFileInsertRequestModel> fileRequestModel) {
+    List<ItemFileMetaDataModel> result = new ArrayList<>();
 
     List<ItemFileCommonCodeDao> commonCodes = itemMapper.listCommonCode(
         ItemFileCommonCodeDao.builder()
@@ -264,9 +290,14 @@ public class ItemService {
       categoryMap.put(dao.getUid(), dao.getName());
     }
     for (ItemFileInsertRequestModel fileModel : fileRequestModel) {
-
-      fileModel.setCategoryName(categoryMap.get(fileModel.getCategoryUid()));
+      //fileModel.setCategoryName(categoryMap.get(fileModel.getCategoryUid()));
+      result.add(
+          ItemFileMetaDataModel.builder()
+              .categoryName(categoryMap.get(fileModel.getCategoryUid()))
+              .fileUri(fileModel.getFileUri())
+              .build());
     }
+    return result;
   }
 
   private ItemDetailResponseModel convertItemDetailResponseModel(ItemDao dao) {
