@@ -324,6 +324,10 @@ public class MarketItemService {
 
     List<MarketItemDetailTableDao> daoList = marketItemDetailMapper.list(requestModel);
 
+    if (daoList.isEmpty()) {
+      throw new ServiceException(Constants.MSG_NO_DATA);
+    }
+
     List<MarketItemDetailListModel> detailList = daoList.stream()
         .map(this::convertMarketItemDetailListModel).collect(Collectors.toList());
 
