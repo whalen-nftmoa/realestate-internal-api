@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.labshigh.realestate.internal.api.log.mapper.LogItemBuyMapper">
+  <insert id="insert" keyProperty="uid" keyColumn="uid" useGeneratedKeys="true" parameterType="com.labshigh.realestate.internal.api.log.dao.LogItemBuyDao">
+    INSERT INTO item_buy_log (`member_uid`, `market_item_uid`, `status`)
+    VALUES (#{memberUid}, #{marketItemUid}, #{status} )
+  </insert>
+
+  <update id="update" parameterType="com.labshigh.realestate.internal.api.log.dao.LogItemBuyDao">
+    UPDATE item_buy_log SET item_buy_uid = #{itemBuyUid},
+                            status = #{status},
+                            code = #{code},
+                            message = #{message},
+                            `data` = #{data}
+    WHERE
+        uid = #{uid}
+  </update>
+</mapper>
