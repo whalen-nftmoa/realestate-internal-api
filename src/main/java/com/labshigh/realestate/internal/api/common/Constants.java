@@ -1,7 +1,10 @@
 package com.labshigh.realestate.internal.api.common;
 
 public class Constants {
-
+  // Log Status
+  public enum LogStatus {
+    PROGRESS, COMPLETE, ERROR;
+  }
   // 응답 컨텐츠 타입
   public static final String REQUEST_CONTENT_TYPE = "application/json; charset=UTF-8";
   public static final String RESPONSE_CONTENT_TYPE = "application/json; charset=UTF-8";
@@ -111,6 +114,8 @@ public class Constants {
   public static final String MSG_MARKET_ITEM_MY_ITEM_BUY_ERROR = "본인이 생성 한 아이템은 구매가 불가능합니다.";
   public static final String MSG_MARKET_ITEM_END_DATE_BUY_ERROR = "판매가 마감 된 아이템은 구매가 불가능합니다.";
 
+  //Market Item Log
+  public static final String MSG_MARKET_ITEM_BUY_LOG_EMPTY_KEY_ERROR = "로그 키가 없습니다.";
   private Constants() {
     throw new IllegalStateException("Constants Class");
   }
