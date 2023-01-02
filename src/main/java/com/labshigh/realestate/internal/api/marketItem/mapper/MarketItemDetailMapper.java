@@ -14,4 +14,5 @@ public interface MarketItemDetailMapper {
 
   List<MarketItemDetailTableDao> list(MarketItemDetailListRequestModel requestModel);
 
+  void updateSellFlag(MarketItemDetailTableDao dao);
 }

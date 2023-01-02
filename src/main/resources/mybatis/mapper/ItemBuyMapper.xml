@@ -92,7 +92,7 @@
     WHERE 	ib.deleted_flag = false AND
       ib.used_flag = true AND
       i.current_quantity > 0 AND
-    (ib.market_item_uid = #{marketItemUid} OR mi.first_market_item_uid = #{marketItemUid})
+    (ib.market_item_uid = #{request.marketItemUid} OR mi.first_market_item_uid = #{request.marketItemUid})
     <if test="request.memberUid > 0">
         AND i.member_uid = #{request.memberUid}
     </if>
@@ -267,7 +267,7 @@
     ib.used_flag = true AND
     i.current_quantity > 0
 
-    <if test="itemBuyUidList.size() > 0">
+    <if test="itemBuyUidList != null and itemBuyUidList.size() > 0">
       AND ib.uid IN
       <foreach collection="itemBuyUidList" item="uid" open="(" close=")" separator=",">
         #{uid}

@@ -27,11 +27,14 @@ public class MarketItemDetailTableDao {
   private long marketItemUid;
   private long itemBuyUid;
   private boolean sellFlag;
-
   private long itemUid;
   private String imageUri;
   private BigDecimal price;
   private BigDecimal usdPrice;
   private BigDecimal fogPrice;
+  private long quantity;
+  private long currentQuantity;
   private String indexName;
+  private long index;
+  private long memberUid;
 }

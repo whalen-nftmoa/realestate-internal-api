@@ -6,6 +6,7 @@ import com.labshigh.realestate.internal.api.common.exceptions.ServiceException;
 import com.labshigh.realestate.internal.api.marketItem.model.request.ItemBuyInsertRequestModel;
 import com.labshigh.realestate.internal.api.marketItem.model.request.ItemBuyListByUidRequestModel;
 import com.labshigh.realestate.internal.api.marketItem.model.request.ItemBuyListRequestModel;
+import com.labshigh.realestate.internal.api.marketItem.model.request.ItemRebuyInsertRequestModel;
 import com.labshigh.realestate.internal.api.marketItem.model.request.MarketItemDeleteRequestModel;
 import com.labshigh.realestate.internal.api.marketItem.model.request.MarketItemDetailListRequestModel;
 import com.labshigh.realestate.internal.api.marketItem.model.request.MarketItemDetailRequestModel;
@@ -16,6 +17,7 @@ import com.labshigh.realestate.internal.api.marketItem.validator.ItemBuyInsertRe
 import com.labshigh.realestate.internal.api.marketItem.validator.ItemBuyListByMemberRequestValidator;
 import com.labshigh.realestate.internal.api.marketItem.validator.ItemBuyListByUidRequestValidator;
 import com.labshigh.realestate.internal.api.marketItem.validator.ItemBuyListRequestValidator;
+import com.labshigh.realestate.internal.api.marketItem.validator.ItemRebuyInsertRequestValidator;
 import com.labshigh.realestate.internal.api.marketItem.validator.MarketItemDeleteRequestValidator;
 import com.labshigh.realestate.internal.api.marketItem.validator.MarketItemDetailListRequestValidator;
 import com.labshigh.realestate.internal.api.marketItem.validator.MarketItemDetailRequestValidator;
@@ -61,6 +63,37 @@ public class MarketItemController {
     } else {
       try {
         responseModel.setData(marketItemService.insertItemBuy(itemBuyInsertRequestModel));
+      } catch (ServiceException e) {
+        responseModel.setStatus(HttpStatus.PRECONDITION_FAILED.value());
+        responseModel.setMessage(e.getMessage());
+      } catch (Exception e) {
+        responseModel.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
+        responseModel.setMessage(HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase());
+        responseModel.error.setErrorCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
+        responseModel.error.setErrorMessage(e.getLocalizedMessage());
+      }
+    }
+    return responseModel.toResponse();
+  }
+
+  @ApiOperation("MarketItem 구매")
+  @PostMapping(value = "/rebuy", produces = {Constants.RESPONSE_CONTENT_TYPE})
+  public ResponseEntity<String> insertItemRebuy(
+      @RequestBody ItemRebuyInsertRequestModel itemRebuyInsertRequestModel,
+      BindingResult bindingResult) {
+    ResponseModel responseModel = new ResponseModel();
+
+    itemRebuyInsertRequestModel.setItemKind(2);
+
+    ItemRebuyInsertRequestValidator.builder().build()
+        .validate(itemRebuyInsertRequestModel, bindingResult);
+
+    if (bindingResult.hasErrors()) {
+      responseModel.setStatus(HttpStatus.PRECONDITION_FAILED.value());
+      responseModel.setMessage(bindingResult.getAllErrors().get(0).getDefaultMessage());
+    } else {
+      try {
+        marketItemService.insertItemRebuy(itemRebuyInsertRequestModel);
       } catch (ServiceException e) {
         responseModel.setStatus(HttpStatus.PRECONDITION_FAILED.value());
         responseModel.setMessage(e.getMessage());
