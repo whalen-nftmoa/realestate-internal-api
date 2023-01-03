@@ -21,6 +21,7 @@ import com.labshigh.realestate.internal.api.marketItem.model.request.ItemBuyInse
 import com.labshigh.realestate.internal.api.marketItem.model.request.ItemBuyListByUidRequestModel;
 import com.labshigh.realestate.internal.api.marketItem.model.request.ItemBuyListRequestModel;
 import com.labshigh.realestate.internal.api.marketItem.model.request.ItemRebuyInsertRequestModel;
+import com.labshigh.realestate.internal.api.marketItem.model.request.MarketItemCancelResellRequestModel;
 import com.labshigh.realestate.internal.api.marketItem.model.request.MarketItemDeleteRequestModel;
 import com.labshigh.realestate.internal.api.marketItem.model.request.MarketItemDetailListRequestModel;
 import com.labshigh.realestate.internal.api.marketItem.model.request.MarketItemDetailRequestModel;
@@ -282,6 +283,38 @@ public class MarketItemService {
         .build();
   }
 
+  @Transactional
+  public void marketItemCancelResell(MarketItemCancelResellRequestModel requestModel) {
+    int count = marketItemMapper.countMarketItemMyResell(requestModel);
+
+    if (count < 1) {
+      throw new ServiceException(Constants.MSG_NO_DATA);
+    }
+    //판매 되지 않은 디테일 데이터 조회
+    MarketItemDetailListRequestModel marketItemDetailListRequestModel = new MarketItemDetailListRequestModel();
+    marketItemDetailListRequestModel.setMarketItemUid(requestModel.getMarketItemUid());
+    List<MarketItemDetailTableDao> detailTableDaoList = marketItemDetailMapper.list(
+        marketItemDetailListRequestModel);
+
+    if (detailTableDaoList.isEmpty()) {
+      throw new ServiceException(Constants.MSG_MARKET_ITEM_ZERO_QUANTITY_SELL_ERROR);
+    }
+
+    // 판매 취소 플래그 업데이트
+    marketItemMapper.updateCancelMarketItem(MarketItemDao.builder()
+        .uid(requestModel.getMarketItemUid())
+        .cancelTransactionHash(requestModel.getCancelTransactionHash().getHash()).build());
+
+    for (MarketItemDetailTableDao detailTableDao : detailTableDaoList) {
+      // 판매 취소 된 수량 의 구매 수량 업데이트
+      itemMapper.updateItemCurrentQuantity(ItemDao.builder()
+          .uid(detailTableDao.getItemUid())
+          .currentQuantity(1)
+          .build());
+    }
+
+  }
+
 
   public ResponseListModel listItemBuyByMember(ItemBuyListRequestModel requestModel) {
     ResponseListModel responseListModel = new ResponseListModel();
@@ -431,6 +464,7 @@ public class MarketItemService {
         .projectName(dao.getProjectName())
         .imageUri("https://" + s3EndPoint + "/" + s3NftBucket + dao.getImageUri())
         .itemUid(dao.getItemUid())
+        .tokenUri("https://" + s3EndPoint + "/" + s3NftBucket + dao.getTokenUri())
         .build();
   }
 

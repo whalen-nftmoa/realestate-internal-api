@@ -37,5 +37,6 @@ public class MarketItemResellResponseModel {
   private String walletAddress;
   private String projectName;
   private String imageUri;
+  private String tokenUri;
   private long itemUid;
 }

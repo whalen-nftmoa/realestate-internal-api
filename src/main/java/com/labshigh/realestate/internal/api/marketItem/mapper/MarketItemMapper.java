@@ -4,6 +4,7 @@ import com.labshigh.realestate.internal.api.marketItem.dao.MarketItemDao;
 import com.labshigh.realestate.internal.api.marketItem.dao.MarketItemDetailDao;
 import com.labshigh.realestate.internal.api.marketItem.dao.MarketItemResellDao;
 import com.labshigh.realestate.internal.api.marketItem.dao.SellMemberDao;
+import com.labshigh.realestate.internal.api.marketItem.model.request.MarketItemCancelResellRequestModel;
 import com.labshigh.realestate.internal.api.marketItem.model.request.MarketItemListRequestModel;
 import com.labshigh.realestate.internal.api.marketItem.model.request.MarketItemResellListRequestModel;
 import java.util.List;
@@ -25,6 +26,8 @@ public interface MarketItemMapper {
   List<MarketItemResellDao> listMarketItemResell(MarketItemResellListRequestModel requestModel);
 
   List<MarketItemResellDao> listMarketItemMyResell(MarketItemResellListRequestModel requestModel);
+
+  int countMarketItemMyResell(MarketItemCancelResellRequestModel requestModel);
 
   List<SellMemberDao> listSellMember();
 

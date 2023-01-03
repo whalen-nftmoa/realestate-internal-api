@@ -7,6 +7,7 @@ import com.labshigh.realestate.internal.api.marketItem.model.request.ItemBuyInse
 import com.labshigh.realestate.internal.api.marketItem.model.request.ItemBuyListByUidRequestModel;
 import com.labshigh.realestate.internal.api.marketItem.model.request.ItemBuyListRequestModel;
 import com.labshigh.realestate.internal.api.marketItem.model.request.ItemRebuyInsertRequestModel;
+import com.labshigh.realestate.internal.api.marketItem.model.request.MarketItemCancelResellRequestModel;
 import com.labshigh.realestate.internal.api.marketItem.model.request.MarketItemDeleteRequestModel;
 import com.labshigh.realestate.internal.api.marketItem.model.request.MarketItemDetailListRequestModel;
 import com.labshigh.realestate.internal.api.marketItem.model.request.MarketItemDetailRequestModel;
@@ -18,6 +19,7 @@ import com.labshigh.realestate.internal.api.marketItem.validator.ItemBuyListByMe
 import com.labshigh.realestate.internal.api.marketItem.validator.ItemBuyListByUidRequestValidator;
 import com.labshigh.realestate.internal.api.marketItem.validator.ItemBuyListRequestValidator;
 import com.labshigh.realestate.internal.api.marketItem.validator.ItemRebuyInsertRequestValidator;
+import com.labshigh.realestate.internal.api.marketItem.validator.MarketItemCancelResellRequestValidator;
 import com.labshigh.realestate.internal.api.marketItem.validator.MarketItemDeleteRequestValidator;
 import com.labshigh.realestate.internal.api.marketItem.validator.MarketItemDetailListRequestValidator;
 import com.labshigh.realestate.internal.api.marketItem.validator.MarketItemDetailRequestValidator;
@@ -34,6 +36,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -343,6 +346,39 @@ public class MarketItemController {
     } else {
       try {
         responseModel.setData(marketItemService.listItemBuyByMember(itemBuyListRequestModel));
+      } catch (ServiceException e) {
+        responseModel.setStatus(HttpStatus.PRECONDITION_FAILED.value());
+        responseModel.setMessage(e.getMessage());
+      } catch (Exception e) {
+        responseModel.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
+        responseModel.setMessage(HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase());
+        responseModel.error.setErrorCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
+        responseModel.error.setErrorMessage(e.getLocalizedMessage());
+      }
+    }
+    return responseModel.toResponse();
+  }
+
+  //marketItemCancelResell
+  @ApiOperation("사용자 재판매 아이템 판매 취소")
+  @PutMapping(value = "/{marketItemUid}/cancelResell", produces = {
+      Constants.RESPONSE_CONTENT_TYPE})
+  public ResponseEntity<String> marketItemCancelResell(
+      @PathVariable(value = "marketItemUid") long marketItemUid,
+      @RequestBody MarketItemCancelResellRequestModel marketItemCancelResellRequestModel,
+      BindingResult bindingResult) {
+    ResponseModel responseModel = new ResponseModel();
+    marketItemCancelResellRequestModel.setMarketItemUid(marketItemUid);
+
+    MarketItemCancelResellRequestValidator.builder().build()
+        .validate(marketItemCancelResellRequestModel, bindingResult);
+
+    if (bindingResult.hasErrors()) {
+      responseModel.setStatus(HttpStatus.PRECONDITION_FAILED.value());
+      responseModel.setMessage(bindingResult.getAllErrors().get(0).getDefaultMessage());
+    } else {
+      try {
+        marketItemService.marketItemCancelResell(marketItemCancelResellRequestModel);
       } catch (ServiceException e) {
         responseModel.setStatus(HttpStatus.PRECONDITION_FAILED.value());
         responseModel.setMessage(e.getMessage());

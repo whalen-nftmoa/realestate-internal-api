@@ -42,5 +42,6 @@ public class MarketItemResellDao {
   private long firstMarketItemUid;
   private String projectName;
   private String imageUri;
+  private String tokenUri;
   private long itemUid;
 }

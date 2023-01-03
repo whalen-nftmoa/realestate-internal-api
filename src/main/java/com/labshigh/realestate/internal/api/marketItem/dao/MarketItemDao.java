@@ -38,4 +38,5 @@ public class MarketItemDao {
   private String nftId;
   private int mintingStatus;
   private long firstMarketItemUid;
+  private String cancelTransactionHash;
 }
