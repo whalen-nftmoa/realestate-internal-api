@@ -37,6 +37,8 @@ public class LogItemBuyService {
   public LogItemBuyResponseModel updateItemBuyLog(LogItemBuyUpdateRequestModel requestModel) {
     LogItemBuyDao logItemBuyDao = LogItemBuyDao.builder()
       .uid(requestModel.getUid())
+      .marketItemUid(requestModel.getMarketItemUid())
+      .memberUid(requestModel.getMemberUid())
       .code(requestModel.getCode())
       .message(requestModel.getMessage())
       .data(requestModel.getData())
