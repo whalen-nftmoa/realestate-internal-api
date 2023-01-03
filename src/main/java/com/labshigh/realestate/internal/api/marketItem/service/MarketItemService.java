@@ -33,6 +33,7 @@ import com.labshigh.realestate.internal.api.marketItem.model.response.MarketItem
 import com.labshigh.realestate.internal.api.marketItem.model.response.MarketItemDetailListResponseModel;
 import com.labshigh.realestate.internal.api.marketItem.model.response.MarketItemDetailResponseModel;
 import com.labshigh.realestate.internal.api.marketItem.model.response.MarketItemListResponseModel;
+import com.labshigh.realestate.internal.api.marketItem.model.response.MarketItemMyResellResponseModel;
 import com.labshigh.realestate.internal.api.marketItem.model.response.MarketItemResellResponseModel;
 import com.labshigh.realestate.internal.api.marketItem.model.response.SellMemberResponseModel;
 import java.time.LocalDateTime;
@@ -258,6 +259,29 @@ public class MarketItemService {
         .collect(Collectors.toList());
   }
 
+  public MarketItemMyResellResponseModel listMarketItemMyResell(
+      MarketItemResellListRequestModel requestModel) {
+
+    List<MarketItemResellDao> daoList = marketItemMapper.listMarketItemMyResell(requestModel);
+
+    if (daoList.isEmpty()) {
+      return MarketItemMyResellResponseModel.builder().itemList(Collections.emptyList()).build();
+    }
+
+    List<MarketItemResellResponseModel> responseModelList = daoList.stream()
+        .map(this::convertMarketItemResellResponseModel)
+        .collect(Collectors.toList());
+    long itemUid = responseModelList.get(0).getItemUid();
+    List<ItemFileDao> itemFileDaoList = itemFileMapper.listFile(
+        ItemFileDao.builder().itemUid(itemUid).build());
+    List<ItemFileResponseModel> itemFileList = itemFileDaoList.stream()
+        .map(this::convertItemFileResponseModel).collect(Collectors.toList());
+    return MarketItemMyResellResponseModel.builder()
+        .itemList(responseModelList)
+        .itemFileList(itemFileList)
+        .build();
+  }
+
 
   public ResponseListModel listItemBuyByMember(ItemBuyListRequestModel requestModel) {
     ResponseListModel responseListModel = new ResponseListModel();
@@ -404,6 +428,9 @@ public class MarketItemService {
         .fogTotalPrice(dao.getTotalPrice())
         .indexName(dao.getIndexName())
         .walletAddress(dao.getWalletAddress())
+        .projectName(dao.getProjectName())
+        .imageUri("https://" + s3EndPoint + "/" + s3NftBucket + dao.getImageUri())
+        .itemUid(dao.getItemUid())
         .build();
   }
 

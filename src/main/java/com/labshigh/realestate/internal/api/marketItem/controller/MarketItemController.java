@@ -22,6 +22,7 @@ import com.labshigh.realestate.internal.api.marketItem.validator.MarketItemDelet
 import com.labshigh.realestate.internal.api.marketItem.validator.MarketItemDetailListRequestValidator;
 import com.labshigh.realestate.internal.api.marketItem.validator.MarketItemDetailRequestValidator;
 import com.labshigh.realestate.internal.api.marketItem.validator.MarketItemListRequestValidator;
+import com.labshigh.realestate.internal.api.marketItem.validator.MarketItemMyResellListRequestValidator;
 import com.labshigh.realestate.internal.api.marketItem.validator.MarketItemResellListRequestValidator;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.log4j.Log4j2;
@@ -76,7 +77,7 @@ public class MarketItemController {
     return responseModel.toResponse();
   }
 
-  @ApiOperation("MarketItem 구매")
+  @ApiOperation("MarketItem 재구매")
   @PostMapping(value = "/rebuy", produces = {Constants.RESPONSE_CONTENT_TYPE})
   public ResponseEntity<String> insertItemRebuy(
       @RequestBody ItemRebuyInsertRequestModel itemRebuyInsertRequestModel,
@@ -155,6 +156,38 @@ public class MarketItemController {
       try {
         responseModel.setData(
             marketItemService.listMarketItemResell(marketItemResellListRequestModel));
+      } catch (ServiceException e) {
+        responseModel.setStatus(HttpStatus.PRECONDITION_FAILED.value());
+        responseModel.setMessage(e.getMessage());
+      } catch (Exception e) {
+        responseModel.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
+        responseModel.setMessage(HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase());
+        responseModel.error.setErrorCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
+        responseModel.error.setErrorMessage(e.getLocalizedMessage());
+      }
+    }
+    return responseModel.toResponse();
+  }
+
+  @ApiOperation("사용자 재판매 아이템 리스트 조회")
+  @GetMapping(value = "/{marketItemUid}/myResell", produces = {Constants.RESPONSE_CONTENT_TYPE})
+  public ResponseEntity<String> listMarketItemMyResell(
+      @PathVariable(value = "marketItemUid") long marketItemUid,
+      MarketItemResellListRequestModel marketItemResellListRequestModel,
+      BindingResult bindingResult) {
+    ResponseModel responseModel = new ResponseModel();
+    marketItemResellListRequestModel.setMarketItemUid(marketItemUid);
+
+    MarketItemMyResellListRequestValidator.builder().build()
+        .validate(marketItemResellListRequestModel, bindingResult);
+
+    if (bindingResult.hasErrors()) {
+      responseModel.setStatus(HttpStatus.PRECONDITION_FAILED.value());
+      responseModel.setMessage(bindingResult.getAllErrors().get(0).getDefaultMessage());
+    } else {
+      try {
+        responseModel.setData(
+            marketItemService.listMarketItemMyResell(marketItemResellListRequestModel));
       } catch (ServiceException e) {
         responseModel.setStatus(HttpStatus.PRECONDITION_FAILED.value());
         responseModel.setMessage(e.getMessage());

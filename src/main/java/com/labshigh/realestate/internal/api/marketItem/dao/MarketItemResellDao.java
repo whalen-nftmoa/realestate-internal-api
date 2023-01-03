@@ -40,4 +40,7 @@ public class MarketItemResellDao {
   private String indexName;
   private String walletAddress;
   private long firstMarketItemUid;
+  private String projectName;
+  private String imageUri;
+  private long itemUid;
 }

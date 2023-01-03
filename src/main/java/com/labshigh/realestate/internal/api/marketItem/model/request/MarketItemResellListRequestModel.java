@@ -10,5 +10,7 @@ public class MarketItemResellListRequestModel {
 
   @ApiModelProperty(value = "marketItemUid")
   private long marketItemUid;
+  @ApiModelProperty(value = "memberUid")
+  private long memberUid;
 }
 

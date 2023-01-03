@@ -35,4 +35,7 @@ public class MarketItemResellResponseModel {
   private BigDecimal fogTotalPrice;
   private String indexName;
   private String walletAddress;
+  private String projectName;
+  private String imageUri;
+  private long itemUid;
 }

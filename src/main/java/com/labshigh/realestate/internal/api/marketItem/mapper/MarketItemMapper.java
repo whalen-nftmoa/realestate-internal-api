@@ -24,6 +24,8 @@ public interface MarketItemMapper {
 
   List<MarketItemResellDao> listMarketItemResell(MarketItemResellListRequestModel requestModel);
 
+  List<MarketItemResellDao> listMarketItemMyResell(MarketItemResellListRequestModel requestModel);
+
   List<SellMemberDao> listSellMember();
 
   void updateCurrentQuantity(MarketItemDao dao);

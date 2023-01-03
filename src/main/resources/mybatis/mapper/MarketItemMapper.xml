@@ -203,7 +203,75 @@
       mi.used_flag = true AND
       mi.current_quantity > 0 AND
       mi.minting_status = 1 AND
+      mi.cancel_flag = false AND
       mi.first_market_item_uid = #{marketItemUid}
+    ORDER BY mi.price , mi.uid DESC
+  </select>
+
+  <select id="listMarketItemMyResell" resultType="com.labshigh.realestate.internal.api.marketItem.dao.MarketItemResellDao">
+    SELECT mi.uid,
+           mi.created_at,
+           mi.updated_at,
+           mi.deleted_flag,
+           mi.used_flag,
+           mi.quantity,
+           mi.current_quantity,
+           mi.price,
+           mi.price / usd.base_price AS usd_price,
+           mi.price / usd.base_price / fog.price AS fog_price,
+           mi.price * mi.current_quantity AS total_price ,
+           (mi.price * mi.current_quantity) / usd.base_price AS usd_total_price,
+           (mi.price * mi.current_quantity) / usd.base_price / fog.price AS fog_total_price,
+           mi.transaction_hash,
+           mi.sell_id,
+           mi.nft_id,
+           mi.minting_status,
+           mi.first_market_item_uid,
+           (
+             SELECT GROUP_CONCAT(CONCAT('#', ib.`index`) order by ib.`index` )
+             FROM market_item_detail mid2
+                    LEFT OUTER JOIN item_buy ib ON mid2.item_buy_uid = ib.uid AND ib.deleted_flag = false AND ib.used_flag = true
+             WHERE mid2.deleted_flag = false AND
+               mid2.used_flag = true AND
+               mid2.sell_flag = false AND
+               mi.uid = mid2.market_item_uid
+
+           ) AS index_name ,
+           (
+             SELECT m.wallet_address
+             FROM market_item_detail mid2
+                    LEFT OUTER JOIN item_buy ib ON mid2.item_buy_uid = ib.uid AND ib.deleted_flag = false AND ib.used_flag = true
+                    LEFT OUTER JOIN item AS i ON ib.item_uid = i.uid AND i.deleted_flag = false AND i.used_flag = true
+                    LEFT OUTER JOIN `member` AS m ON i.member_uid = m.uid AND m.deleted_flag = false AND m.used_flag = true
+             WHERE mid2.deleted_flag = false AND
+               mid2.used_flag = true AND
+               mid2.sell_flag = false AND
+               mid2.market_item_uid = mi.uid
+             LIMIT 0 , 1
+           ) AS wallet_address ,
+           i.project_name,
+           i.image_uri,
+           i.item_uid
+    FROM   market_item mi
+             LEFT OUTER JOIN realestate.exchange usd ON usd.code = 'FRX.KRWUSD' AND usd.deleted_flag = false AND usd.used_flag = true
+             LEFT OUTER JOIN realestate.exchange_virtual2 fog on fog.name = 'FOGnet_USD' AND fog.deleted_flag = false AND fog.used_flag = true
+             LEFT OUTER JOIN (
+              SELECT mi2.uid AS market_item_uid, i.uid AS item_uid, i.project_name , i.image_uri, i.member_uid
+              FROM market_item mi2
+                     LEFT OUTER JOIN item AS i ON mi2.item_uid = i.uid AND i.deleted_flag = false AND i.used_flag = true
+                     LEFT OUTER JOIN `member` AS m ON i.member_uid = m.uid AND m.deleted_flag = false AND m.used_flag = true
+              WHERE mi2.deleted_flag = false AND
+                mi2.used_flag = true  AND
+                mi2.uid = #{marketItemUid}
+            ) AS i ON i.market_item_uid = #{marketItemUid}
+    WHERE mi.item_uid = 0 AND
+      mi.deleted_flag = false AND
+      mi.used_flag = true AND
+      mi.current_quantity > 0 AND
+      mi.minting_status = 1 AND
+      mi.cancel_flag = false AND
+      mi.first_market_item_uid = #{marketItemUid} AND
+      i.member_uid = #{memberUid}
     ORDER BY mi.price ASC , mi.uid DESC
   </select>
 
