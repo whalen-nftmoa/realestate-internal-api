@@ -10,7 +10,7 @@ def buildNumber = System.getenv('BUILD_NUMBER')
 def jenkinsBuild = buildNumber != null ? buildNumber : "0"
 
 group = 'com.labshigh.realestate.internal.api'
-version = "1.0.0.${jenkinsBuild}"
+version = "1.0.0.0"
 sourceCompatibility = '1.8'
 
 repositories {
