@@ -37,4 +37,6 @@ public class MarketItemDetailTableDao {
   private String indexName;
   private long index;
   private long memberUid;
+  private String tokenUri;
+  private String transactionHash;
 }

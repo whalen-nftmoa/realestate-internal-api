@@ -484,6 +484,8 @@ public class MarketItemService {
         .usdPrice(dao.getUsdPrice())
         .fogPrice(dao.getFogPrice())
         .indexName(dao.getIndexName())
+        .tokenUri("https://" + s3EndPoint + "/" + s3NftBucket + dao.getTokenUri())
+        .transactionHash(dao.getTransactionHash())
         .build();
 
   }
