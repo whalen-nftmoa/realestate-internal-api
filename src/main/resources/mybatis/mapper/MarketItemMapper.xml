@@ -300,6 +300,274 @@
     mi.minting_status = 1
   </select>
 
+  <select id="listMarketItemHistory" resultType="com.labshigh.realestate.internal.api.marketItem.dao.MarketItemHistoryListDao">
+
+
+    SELECT result.event, result.created_at, result.transaction_hash, result.price, result.`number`,
+    result.from_wallet_address, result.to_wallet_address,
+    result.usd_price, result.fog_price, result.total_price, result.usd_total_price,
+    result.fog_total_price , result.quantity
+    FROM
+    (
+        SELECT * FROM (
+          SELECT rs.event, rs.created_at, rs.transaction_hash, rs.price, rs.`number`,
+          rs.from_wallet_address, rs.to_wallet_address,
+          rs.price / usd.base_price AS usd_price,
+          rs.price / usd.base_price / fog.price AS fog_price,
+          rs.price * rs.quantity AS total_price ,
+          (rs.price * rs.quantity) / usd.base_price AS usd_total_price,
+          (rs.price * rs.quantity) / usd.base_price / fog.price AS fog_total_price,
+          rs.quantity
+          FROM
+          (
+          /* 판매 정보 */
+          SELECT 'List' AS event, mi.created_at, mi.transaction_hash, mi.price, CASE WHEN mi.quantity > 1
+          THEN CONCAT('[', mi.quantity, ' EA]') ELSE CONCAT('#', ib.`index`) END AS `number` ,
+          m.wallet_address AS from_wallet_address , '' AS to_wallet_address,mi.quantity
+          FROM market_item mi LEFT OUTER JOIN
+          (
+          SELECT mid2.market_item_uid ,MAX(mid2.item_buy_uid) AS item_buy_uid
+          FROM market_item_detail mid2
+          WHERE mid2.deleted_flag = false AND mid2.used_flag = true
+          GROUP BY mid2.market_item_uid
+          ) AS mid2 ON mi.uid = mid2.market_item_uid
+          LEFT OUTER JOIN item_buy ib ON mid2.item_buy_uid = ib.uid AND ib.deleted_flag = false AND
+          ib.used_flag = true
+          LEFT OUTER JOIN item AS i ON ib.item_uid = i.uid AND i.deleted_flag = false AND i.used_flag =
+          true
+          LEFT OUTER JOIN `member` AS m ON i.member_uid = m.uid AND m.deleted_flag = false AND m.used_flag
+          = true
+
+          WHERE (mi.first_market_item_uid = #{marketItemUid}) AND mi.minting_status = 1 AND
+          mi.deleted_flag = false AND mi.used_flag = true
+
+          UNION ALL
+
+          /* 구매정보 */
+          SELECT 'Sell' AS event, MAX(ib.created_at), ib.transaction_hash, MAX(ib.price) AS price, CASE
+          WHEN COUNT(*) > 1 THEN CONCAT('[', COUNT(*) , ' EA]') ELSE CONCAT('#', MAX(ib.`index`) ) END AS
+          `number`, CASE WHEN MAX(mi.item_uid) = 0 THEN MAX(m2.wallet_address) ELSE MAX(am.wallet_address)
+          END AS from_wallet_address, MAX(m.wallet_address) AS to_wallet_address, COUNT(*) AS quantity
+          FROM item_buy ib
+          LEFT OUTER JOIN market_item mi ON ib.market_item_uid = mi.uid AND mi.deleted_flag = false AND
+          mi.used_flag = true
+          LEFT OUTER JOIN item i ON ib.item_uid = i.uid AND i.deleted_flag = false AND i.used_flag = true
+          LEFT OUTER JOIN `member` m ON i.member_uid = m.uid AND m.deleted_flag = false AND m.used_flag =
+          true
+          LEFT OUTER JOIN item ai ON mi.item_uid = ai.uid AND ai.deleted_flag = false AND ai.used_flag =
+          true
+          LEFT OUTER JOIN `member` am ON ai.member_uid = am.uid AND am.deleted_flag = false AND
+          am.used_flag = true
+          LEFT OUTER JOIN
+          (
+          SELECT mid2.market_item_uid ,MAX(mid2.item_buy_uid) AS item_buy_uid
+          FROM market_item_detail mid2
+          WHERE mid2.deleted_flag = false AND mid2.used_flag = true AND mid2.sell_flag = true
+          GROUP BY mid2.market_item_uid
+          ) AS mid2 ON mi.uid = mid2.market_item_uid
+          LEFT OUTER JOIN item_buy ib2 ON ib2.uid = mid2.item_buy_uid AND ib2.deleted_flag = false AND
+          ib2.used_flag = true
+          LEFT OUTER JOIN item i2 ON ib2.item_uid = i2.uid AND i2.deleted_flag = false AND i2.used_flag =
+          true
+          LEFT OUTER JOIN `member` m2 ON i2.member_uid = m2.uid AND m2.deleted_flag = false AND
+          m2.used_flag = true
+          WHERE (mi.uid = #{marketItemUid} OR mi.first_market_item_uid = #{marketItemUid}) AND
+          mi.minting_status = 1 AND mi.deleted_flag = false AND mi.used_flag = true
+          GROUP BY ib.transaction_hash
+
+          UNION ALL
+
+          /*취소정보*/
+          SELECT 'Cancel' AS event, mi.updated_at, mi.cancel_transaction_hash, mi.price, CASE WHEN
+          mi.quantity > 1 THEN CONCAT('[', mi.current_quantity , ' EA]') ELSE CONCAT('#', ib.`index`) END
+          AS `number`, m.wallet_address AS from_wallet_address , '' AS to_wallet_address,
+          mi.current_quantity AS quantity
+          FROM market_item mi LEFT OUTER JOIN
+          (
+          SELECT mid2.market_item_uid ,MAX(mid2.item_buy_uid) AS item_buy_uid
+          FROM market_item_detail mid2
+          WHERE mid2.deleted_flag = false AND mid2.used_flag = true
+          GROUP BY mid2.market_item_uid
+          ) AS mid2 ON mi.uid = mid2.market_item_uid
+          LEFT OUTER JOIN item_buy ib ON mid2.item_buy_uid = ib.uid AND ib.deleted_flag = false AND
+          ib.used_flag = true
+          LEFT OUTER JOIN item AS i ON ib.item_uid = i.uid AND i.deleted_flag = false AND i.used_flag =
+          true
+          LEFT OUTER JOIN `member` AS m ON i.member_uid = m.uid AND m.deleted_flag = false AND m.used_flag
+          = true
+          WHERE (mi.first_market_item_uid = #{marketItemUid}) AND mi.minting_status = 1 AND mi.cancel_flag
+          = true AND mi.deleted_flag = false AND mi.used_flag = true
+          ) AS rs
+          LEFT OUTER JOIN exchange usd ON usd.code = 'FRX.KRWUSD' AND usd.deleted_flag = false AND
+          usd.used_flag = true
+          LEFT OUTER JOIN exchange_virtual2 fog on fog.name = 'FOGnet_USD' AND fog.deleted_flag = false
+          AND fog.used_flag = true
+
+        ) AS a
+      UNION ALL
+
+        /*민팅정보*/
+        SELECT 'Minted' AS event, mi.created_at , mi.transaction_hash,'' AS price, CONCAT('~ ' , mi.quantity)  AS `number`, m.wallet_address AS from_wallet_address, '' AS to_wallet_address,
+              '' AS usd_price ,
+              '' AS fog_price,
+              '' AS total_price,
+              '' AS usd_total_price,
+              '' AS fog_total_price,
+              mi.quantity AS qunatity
+        FROM market_item mi
+               LEFT OUTER JOIN item AS i ON mi.item_uid = i.uid AND i.deleted_flag = false AND i.used_flag = true
+               LEFT OUTER JOIN `member` AS m ON i.member_uid = m.uid AND m.deleted_flag = false AND m.used_flag = true
+        WHERE mi.uid = #{marketItemUid} AND mi.minting_status = 1 AND mi.deleted_flag = false AND mi.used_flag = true
+    ) result
+    <choose>
+      <when test="sort != null and sort.name() == 'lowPrice'">
+        ORDER BY result.price , result.created_at DESC
+      </when>
+      <when test="sort != null and sort.name() == 'highPrice'">
+        ORDER BY result.price DESC, result.created_at DESC
+      </when>
+      <when test="sort != null and sort.name() == 'recently'">
+        ORDER BY result.created_at DESC
+      </when>
+      <when test="sort != null and sort.name() == 'oldest'">
+        ORDER BY result.created_at
+      </when>
+      <otherwise>
+        ORDER BY result.created_at DESC
+      </otherwise>
+    </choose>
+
+    LIMIT #{offsetAndRowCount.offset}, #{offsetAndRowCount.rowCount}
+
+  </select>
+
+  <select id="countMarketItemHistory" resultType="int">
+    SELECT SUM(cnt)
+    FROM (SELECT cnt
+          FROM (
+                 /* 판매 정보 */
+                 SELECT COUNT(*) AS cnt
+                 FROM market_item mi
+                        LEFT OUTER JOIN
+                      (SELECT mid2.market_item_uid, MAX(mid2.item_buy_uid) AS item_buy_uid
+                       FROM market_item_detail mid2
+                       WHERE mid2.deleted_flag = false
+                         AND mid2.used_flag = true
+                       GROUP BY mid2.market_item_uid) AS mid2 ON mi.uid = mid2.market_item_uid
+                        LEFT OUTER JOIN item_buy ib ON mid2.item_buy_uid = ib.uid AND
+                                                       ib.deleted_flag = false AND
+                                                       ib.used_flag = true
+                        LEFT OUTER JOIN item AS i
+                                        ON ib.item_uid = i.uid AND i.deleted_flag = false AND
+                                           i.used_flag = true
+                        LEFT OUTER JOIN `member` AS m
+                                        ON i.member_uid = m.uid AND m.deleted_flag = false AND
+                                           m.used_flag = true
+
+                 WHERE (mi.first_market_item_uid = #{marketItemUid})
+                   AND mi.minting_status = 1
+                   AND mi.deleted_flag = false
+                   AND mi.used_flag = true
+
+                 UNION ALL
+
+                 /* 구매정보 */
+                 SELECT COUNT(*)
+                 FROM (SELECT ib.transaction_hash
+                       FROM item_buy ib
+                              LEFT OUTER JOIN market_item mi ON ib.market_item_uid = mi.uid AND
+                                                                mi.deleted_flag = false AND
+                                                                mi.used_flag = true
+                              LEFT OUTER JOIN item i ON ib.item_uid = i.uid AND
+                                                        i.deleted_flag = false AND
+                                                        i.used_flag = true
+                              LEFT OUTER JOIN `member` m ON i.member_uid = m.uid AND
+                                                            m.deleted_flag = false AND
+                                                            m.used_flag = true
+                              LEFT OUTER JOIN item ai ON mi.item_uid = ai.uid AND
+                                                         ai.deleted_flag = false AND
+                                                         ai.used_flag = true
+                              LEFT OUTER JOIN `member` am ON ai.member_uid = am.uid AND
+                                                             am.deleted_flag = false AND
+                                                             am.used_flag = true
+                              LEFT OUTER JOIN
+                            (SELECT mid2.market_item_uid, MAX(mid2.item_buy_uid) AS item_buy_uid
+                             FROM market_item_detail mid2
+                             WHERE mid2.deleted_flag = false
+                               AND mid2.used_flag = true
+                               AND mid2.sell_flag = true
+                             GROUP BY mid2.market_item_uid) AS mid2
+                            ON mi.uid = mid2.market_item_uid
+                              LEFT OUTER JOIN item_buy ib2 ON ib2.uid = mid2.item_buy_uid AND
+                                                              ib2.deleted_flag = false AND
+                                                              ib2.used_flag = true
+                              LEFT OUTER JOIN item i2 ON ib2.item_uid = i2.uid AND
+                                                         i2.deleted_flag = false AND
+                                                         i2.used_flag = true
+                              LEFT OUTER JOIN `member` m2 ON i2.member_uid = m2.uid AND
+                                                             m2.deleted_flag = false AND
+                                                             m2.used_flag = true
+                       WHERE (mi.uid = #{marketItemUid} OR
+                              mi.first_market_item_uid = #{marketItemUid})
+                         AND mi.minting_status = 1
+                         AND mi.deleted_flag = false
+                         AND mi.used_flag = true
+                       GROUP BY ib.transaction_hash) buy
+                 UNION ALL
+                 /*취소정보*/
+                 SELECT COUNT(*) AS cnt
+                 FROM market_item mi
+                        LEFT OUTER JOIN
+                      (SELECT mid2.market_item_uid, MAX(mid2.item_buy_uid) AS item_buy_uid
+                       FROM market_item_detail mid2
+                       WHERE mid2.deleted_flag = false
+                         AND mid2.used_flag = true
+                       GROUP BY mid2.market_item_uid) AS mid2 ON mi.uid = mid2.market_item_uid
+                        LEFT OUTER JOIN item_buy ib ON mid2.item_buy_uid = ib.uid AND
+                                                       ib.deleted_flag = false AND
+                                                       ib.used_flag = true
+                        LEFT OUTER JOIN item AS i
+                                        ON ib.item_uid = i.uid AND i.deleted_flag = false AND
+                                           i.used_flag = true
+                        LEFT OUTER JOIN `member` AS m
+                                        ON i.member_uid = m.uid AND m.deleted_flag = false AND
+                                           m.used_flag = true
+                 WHERE (mi.first_market_item_uid = #{marketItemUid})
+                   AND mi.minting_status = 1
+                   AND mi.cancel_flag = true
+                   AND mi.deleted_flag = false
+                   AND mi.used_flag = true) AS rs
+                 LEFT OUTER JOIN exchange usd
+                                 ON usd.code = 'FRX.KRWUSD' AND usd.deleted_flag = false AND
+                                    usd.used_flag = true
+                 LEFT OUTER JOIN exchange_virtual2 fog
+                                 on fog.name = 'FOGnet_USD' AND fog.deleted_flag = false AND
+                                    fog.used_flag = true
+
+          UNION ALL
+
+          /*민팅정보*/
+          SELECT COUNT(*) AS cnt
+          FROM market_item mi
+                 LEFT OUTER JOIN item AS i ON mi.item_uid = i.uid AND i.deleted_flag = false AND
+                                              i.used_flag = true
+                 LEFT OUTER JOIN `member` AS m
+                                 ON i.member_uid = m.uid AND m.deleted_flag = false AND
+                                    m.used_flag = true
+          WHERE mi.uid = #{marketItemUid}
+            AND mi.minting_status = 1
+            AND mi.deleted_flag = false
+            AND mi.used_flag = true) result
+
+  </select>
+
+
+
+
+
+
+
+
   <update id="updateCurrentQuantity">
     UPDATE realestate.market_item
     SET current_quantity = current_quantity - #{currentQuantity}

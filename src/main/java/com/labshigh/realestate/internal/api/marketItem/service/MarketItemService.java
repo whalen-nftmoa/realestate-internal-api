@@ -12,6 +12,7 @@ import com.labshigh.realestate.internal.api.marketItem.dao.ItemBuyDetailDao;
 import com.labshigh.realestate.internal.api.marketItem.dao.MarketItemDao;
 import com.labshigh.realestate.internal.api.marketItem.dao.MarketItemDetailDao;
 import com.labshigh.realestate.internal.api.marketItem.dao.MarketItemDetailTableDao;
+import com.labshigh.realestate.internal.api.marketItem.dao.MarketItemHistoryListDao;
 import com.labshigh.realestate.internal.api.marketItem.dao.MarketItemResellDao;
 import com.labshigh.realestate.internal.api.marketItem.dao.SellMemberDao;
 import com.labshigh.realestate.internal.api.marketItem.mapper.ItemBuyMapper;
@@ -25,6 +26,7 @@ import com.labshigh.realestate.internal.api.marketItem.model.request.MarketItemC
 import com.labshigh.realestate.internal.api.marketItem.model.request.MarketItemDeleteRequestModel;
 import com.labshigh.realestate.internal.api.marketItem.model.request.MarketItemDetailListRequestModel;
 import com.labshigh.realestate.internal.api.marketItem.model.request.MarketItemDetailRequestModel;
+import com.labshigh.realestate.internal.api.marketItem.model.request.MarketItemHistoryListRequestModel;
 import com.labshigh.realestate.internal.api.marketItem.model.request.MarketItemListRequestModel;
 import com.labshigh.realestate.internal.api.marketItem.model.request.MarketItemResellListRequestModel;
 import com.labshigh.realestate.internal.api.marketItem.model.response.ItemBuyListResponseModel;
@@ -33,6 +35,7 @@ import com.labshigh.realestate.internal.api.marketItem.model.response.ItemFileRe
 import com.labshigh.realestate.internal.api.marketItem.model.response.MarketItemDetailListModel;
 import com.labshigh.realestate.internal.api.marketItem.model.response.MarketItemDetailListResponseModel;
 import com.labshigh.realestate.internal.api.marketItem.model.response.MarketItemDetailResponseModel;
+import com.labshigh.realestate.internal.api.marketItem.model.response.MarketItemHistoryListResponseModel;
 import com.labshigh.realestate.internal.api.marketItem.model.response.MarketItemListResponseModel;
 import com.labshigh.realestate.internal.api.marketItem.model.response.MarketItemMyResellResponseModel;
 import com.labshigh.realestate.internal.api.marketItem.model.response.MarketItemResellResponseModel;
@@ -242,6 +245,34 @@ public class MarketItemService {
     return responseListModel;
   }
 
+  public ResponseListModel listMarketItemHistory(
+      MarketItemHistoryListRequestModel requestModel) {
+
+    ResponseListModel responseListModel = new ResponseListModel();
+
+    int totalCount = marketItemMapper.countMarketItemHistory(requestModel);
+
+    responseListModel.setCurrentPage(requestModel.getPage());
+    responseListModel.setTotalCount(totalCount);
+    responseListModel.setPageSize(requestModel.getSize());
+
+    if (totalCount < 1) {
+      responseListModel.setList(Collections.emptyList());
+      return responseListModel;
+    }
+
+    List<MarketItemHistoryListDao> daoList = marketItemMapper.listMarketItemHistory(requestModel);
+
+    List<MarketItemHistoryListResponseModel> list = daoList.stream()
+        .map(this::convertMarketItemHistoryListModel)
+        .collect(Collectors.toList());
+
+    responseListModel.setList(list);
+
+    return responseListModel;
+
+  }
+
   public List<ItemBuyListResponseModel> listItemByMember(
       ItemBuyListByUidRequestModel requestModel) {
     List<ItemBuyDetailDao> dao = itemBuyMapper.listByUid(requestModel);
@@ -259,6 +290,7 @@ public class MarketItemService {
     return daoList.stream().map(this::convertMarketItemResellResponseModel)
         .collect(Collectors.toList());
   }
+
 
   public MarketItemMyResellResponseModel listMarketItemMyResell(
       MarketItemResellListRequestModel requestModel) {
@@ -415,8 +447,25 @@ public class MarketItemService {
     marketItemMapper.deleteItemFile(dao);
     marketItemMapper.deleteMarketItem(dao);
     marketItemMapper.deleteItem(dao);
+  }
 
-
+  private MarketItemHistoryListResponseModel convertMarketItemHistoryListModel(
+      MarketItemHistoryListDao dao) {
+    return MarketItemHistoryListResponseModel.builder()
+        .event(dao.getEvent())
+        .createdAt(dao.getCreatedAt())
+        .transactionHash(dao.getTransactionHash())
+        .price(dao.getPrice())
+        .number(dao.getNumber())
+        .fromWalletAddress(dao.getFromWalletAddress())
+        .toWalletAddress(dao.getToWalletAddress())
+        .usdPrice(dao.getUsdPrice())
+        .fogPrice(dao.getFogPrice())
+        .totalPrice(dao.getTotalPrice())
+        .usdTotalPrice(dao.getUsdTotalPrice())
+        .fogTotalPrice(dao.getFogTotalPrice())
+        .quantity(dao.getQuantity())
+        .build();
   }
 
   private MarketItemDetailListModel convertMarketItemDetailListModel(MarketItemDetailTableDao dao) {
