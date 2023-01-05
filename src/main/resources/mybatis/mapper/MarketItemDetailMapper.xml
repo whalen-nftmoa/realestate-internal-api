@@ -25,7 +25,9 @@
       mi.current_quantity,
       CONCAT('#',ib.`index`) AS index_name,
       ib.`index`,
-      i.member_uid
+      i.member_uid,
+      i.token_uri,
+      mi.transaction_hash
     FROM market_item_detail mid2
       LEFT OUTER JOIN  market_item mi ON mid2.market_item_uid = mi.uid AND mi.deleted_flag = false AND mi.used_flag = true
       LEFT OUTER JOIN item_buy ib ON mid2.item_buy_uid = ib.uid AND ib.deleted_flag = false AND ib.used_flag = true

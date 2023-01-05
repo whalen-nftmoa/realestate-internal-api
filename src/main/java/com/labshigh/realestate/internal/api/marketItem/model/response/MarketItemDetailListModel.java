@@ -29,5 +29,7 @@ public class MarketItemDetailListModel {
   private BigDecimal usdPrice;
   private BigDecimal fogPrice;
   private String indexName;
+  private String tokenUri;
+  private String transactionHash;
 
 }
