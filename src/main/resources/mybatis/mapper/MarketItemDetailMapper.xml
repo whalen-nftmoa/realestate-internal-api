@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.labshigh.realestate.internal.api.marketItem.mapper.MarketItemDetailMapper">
+  <insert id="insertMarketItemDetail" parameterType="com.labshigh.realestate.internal.api.marketItem.dao.MarketItemDetailTableDao" useGeneratedKeys="true">
+    INSERT INTO realestate.market_item_detail(market_item_uid, item_buy_uid)
+    VALUES(#{marketItemUid}, #{itemBuyUid})
+  </insert>
+
+  <select id="list" resultType="com.labshigh.realestate.internal.api.marketItem.dao.MarketItemDetailTableDao">
+    SELECT  mid2.uid ,
+      mid2.created_at,
+      mid2.updated_at,
+      mid2.deleted_flag,
+      mid2.used_flag,
+      mid2.market_item_uid,
+      mid2.item_buy_uid,
+      mid2.sell_flag,
+      ib.item_uid,
+      i.image_uri,
+      mi.price,
+      mi.price / usd.base_price AS usd_price,
+      mi.price / usd.base_price / fog.price AS fog_price,
+      mi.quantity,
+      mi.current_quantity,
+      CONCAT('#',ib.`index`) AS index_name,
+      ib.`index`,
+      i.member_uid
+    FROM market_item_detail mid2
+      LEFT OUTER JOIN  market_item mi ON mid2.market_item_uid = mi.uid AND mi.deleted_flag = false AND mi.used_flag = true
+      LEFT OUTER JOIN item_buy ib ON mid2.item_buy_uid = ib.uid AND ib.deleted_flag = false AND ib.used_flag = true
+      LEFT OUTER JOIN item AS i ON ib.item_uid = i.uid AND i.deleted_flag = false AND i.used_flag = true
+      LEFT OUTER JOIN exchange usd ON usd.code = 'FRX.KRWUSD' AND usd.deleted_flag = false AND usd.used_flag = true
+      LEFT OUTER JOIN exchange_virtual2 fog on fog.name = 'FOGnet_USD' AND fog.deleted_flag = false AND fog.used_flag = true
+    WHERE mid2.deleted_flag = false AND
+      mid2.used_flag = true AND
+      mid2.sell_flag = false AND
+      mi.current_quantity > 0 AND
+      mi.minting_status = 1
+      <if test="marketItemUid > 0">
+        AND mid2.market_item_uid = #{marketItemUid}
+      </if>
+      <if test="marketItemDetailUidList != null and marketItemDetailUidList.size() > 0">
+        AND mid2.uid IN
+        <foreach collection="marketItemDetailUidList" item="uid" open="(" close=")" separator=",">
+          #{uid}
+        </foreach>
+      </if>
+      <choose>
+        <when test="sort != null and sort.name() == 'lowPrice'">
+          ORDER BY mi.price , mid2.uid DESC
+        </when>
+        <when test="sort != null and sort.name() == 'highPrice'">
+          ORDER BY mi.price DESC, mid2.uid DESC
+        </when>
+        <otherwise>
+          ORDER BY mid2.uid DESC
+        </otherwise>
+      </choose>
+  </select>
+
+  <update id="updateSellFlag">
+    UPDATE market_item_detail
+    SET sell_flag = #{sellFlag}
+    WHERE uid = #{uid} AND
+          sell_flag = false;
+  </update>
+
+</mapper>

@@ -11,19 +11,34 @@ import com.labshigh.realestate.internal.api.marketItem.dao.ItemBuyDao;
 import com.labshigh.realestate.internal.api.marketItem.dao.ItemBuyDetailDao;
 import com.labshigh.realestate.internal.api.marketItem.dao.MarketItemDao;
 import com.labshigh.realestate.internal.api.marketItem.dao.MarketItemDetailDao;
+import com.labshigh.realestate.internal.api.marketItem.dao.MarketItemDetailTableDao;
+import com.labshigh.realestate.internal.api.marketItem.dao.MarketItemHistoryListDao;
+import com.labshigh.realestate.internal.api.marketItem.dao.MarketItemResellDao;
 import com.labshigh.realestate.internal.api.marketItem.dao.SellMemberDao;
 import com.labshigh.realestate.internal.api.marketItem.mapper.ItemBuyMapper;
+import com.labshigh.realestate.internal.api.marketItem.mapper.MarketItemDetailMapper;
 import com.labshigh.realestate.internal.api.marketItem.mapper.MarketItemMapper;
 import com.labshigh.realestate.internal.api.marketItem.model.request.ItemBuyInsertRequestModel;
+import com.labshigh.realestate.internal.api.marketItem.model.request.ItemBuyListByUidRequestModel;
 import com.labshigh.realestate.internal.api.marketItem.model.request.ItemBuyListRequestModel;
+import com.labshigh.realestate.internal.api.marketItem.model.request.ItemRebuyInsertRequestModel;
+import com.labshigh.realestate.internal.api.marketItem.model.request.MarketItemCancelResellRequestModel;
 import com.labshigh.realestate.internal.api.marketItem.model.request.MarketItemDeleteRequestModel;
+import com.labshigh.realestate.internal.api.marketItem.model.request.MarketItemDetailListRequestModel;
 import com.labshigh.realestate.internal.api.marketItem.model.request.MarketItemDetailRequestModel;
+import com.labshigh.realestate.internal.api.marketItem.model.request.MarketItemHistoryListRequestModel;
 import com.labshigh.realestate.internal.api.marketItem.model.request.MarketItemListRequestModel;
+import com.labshigh.realestate.internal.api.marketItem.model.request.MarketItemResellListRequestModel;
 import com.labshigh.realestate.internal.api.marketItem.model.response.ItemBuyListResponseModel;
 import com.labshigh.realestate.internal.api.marketItem.model.response.ItemBuyResponseModel;
 import com.labshigh.realestate.internal.api.marketItem.model.response.ItemFileResponseModel;
+import com.labshigh.realestate.internal.api.marketItem.model.response.MarketItemDetailListModel;
+import com.labshigh.realestate.internal.api.marketItem.model.response.MarketItemDetailListResponseModel;
 import com.labshigh.realestate.internal.api.marketItem.model.response.MarketItemDetailResponseModel;
+import com.labshigh.realestate.internal.api.marketItem.model.response.MarketItemHistoryListResponseModel;
 import com.labshigh.realestate.internal.api.marketItem.model.response.MarketItemListResponseModel;
+import com.labshigh.realestate.internal.api.marketItem.model.response.MarketItemMyResellResponseModel;
+import com.labshigh.realestate.internal.api.marketItem.model.response.MarketItemResellResponseModel;
 import com.labshigh.realestate.internal.api.marketItem.model.response.SellMemberResponseModel;
 import java.time.LocalDateTime;
 import java.util.Collections;
@@ -46,6 +61,8 @@ public class MarketItemService {
 
   @Autowired
   private MarketItemMapper marketItemMapper;
+  @Autowired
+  private MarketItemDetailMapper marketItemDetailMapper;
   @Autowired
   private ItemMapper itemMapper;
   @Autowired
@@ -127,6 +144,86 @@ public class MarketItemService {
     return convertMarketItemDetailResponseModel(marketItemDetailDao);
   }
 
+  @Transactional
+  public void insertItemRebuy(ItemRebuyInsertRequestModel requestModel) {
+
+    MarketItemDetailListRequestModel marketItemDetailListRequestModel = new MarketItemDetailListRequestModel();
+    marketItemDetailListRequestModel.setMarketItemUid(requestModel.getMarketItemUid());
+    marketItemDetailListRequestModel.setMarketItemDetailUidList(
+        requestModel.getMarketItemDetailUidList());
+
+    List<MarketItemDetailTableDao> marketItemDetailTableDaoList = marketItemDetailMapper.list(
+        marketItemDetailListRequestModel);
+
+    if (marketItemDetailTableDaoList == null || marketItemDetailTableDaoList.isEmpty()) {
+      throw new ServiceException(Constants.MSG_NO_DATA);
+    }
+
+    if (requestModel.getMarketItemUid() > 0) {
+      if (marketItemDetailTableDaoList.get(0).getCurrentQuantity() - 1
+          < 0) {
+        throw new ServiceException(Constants.MSG_ITEM_BUY_CURRENT_QUANTITY_ERROR);
+      }
+    } else {
+      if (marketItemDetailTableDaoList.get(0).getCurrentQuantity()
+          - marketItemDetailTableDaoList.size()
+          < 0) {
+        throw new ServiceException(Constants.MSG_ITEM_BUY_CURRENT_QUANTITY_ERROR);
+      }
+    }
+
+    if (marketItemDetailTableDaoList.stream()
+        .anyMatch(v -> v.getMemberUid() == requestModel.getMemberUid())) {
+      throw new ServiceException(Constants.MSG_MARKET_ITEM_MY_ITEM_BUY_ERROR);
+    }
+
+    for (MarketItemDetailTableDao detailDao : marketItemDetailTableDaoList) {
+
+      ItemDao itemDao = ItemDao.builder()
+          .uid(detailDao.getItemUid())
+          .memberUid(requestModel.getMemberUid())
+          .quantity(1)
+          .currentQuantity(1)
+          .itemKind(requestModel.getItemKind())
+          .index(detailDao.getIndex())
+          .build();
+
+      itemMapper.insertRebuyItem(itemDao);
+
+      itemFileMapper.insertBuyItem(ItemFileDao.builder()
+          .itemUid(detailDao.getItemUid())
+          .newItemUid(itemDao.getUid())
+          .build());
+
+      ItemBuyDao itemBuyDao = ItemBuyDao.builder()
+          .price(requestModel.getPrice())
+          .nftId(requestModel.getNftId())
+          .contractAddress(requestModel.getContractAddress())
+          .marketItemUid(detailDao.getMarketItemUid())
+          .itemUid(itemDao.getUid())
+          .index(itemDao.getIndex())
+          .transactionHash(requestModel.getTransactionHash().getHash())
+          .build();
+      itemBuyMapper.insert(itemBuyDao);
+
+      MarketItemDao marketItemDao = MarketItemDao.builder()
+          .currentQuantity(1)
+          .uid(detailDao.getMarketItemUid())
+          .build();
+
+      marketItemMapper.updateCurrentQuantity(marketItemDao);
+
+      //판매 여부 업데이트
+      marketItemDetailMapper.updateSellFlag(MarketItemDetailTableDao.builder()
+          .uid(detailDao.getUid())
+          .sellFlag(true)
+          .build());
+
+    }
+
+  }
+
+
   public ResponseListModel listItemBuy(ItemBuyListRequestModel requestModel) {
     ResponseListModel responseListModel = new ResponseListModel();
 
@@ -147,6 +244,109 @@ public class MarketItemService {
     responseListModel.setList(responseModelList);
     return responseListModel;
   }
+
+  public ResponseListModel listMarketItemHistory(
+      MarketItemHistoryListRequestModel requestModel) {
+
+    ResponseListModel responseListModel = new ResponseListModel();
+
+    int totalCount = marketItemMapper.countMarketItemHistory(requestModel);
+
+    responseListModel.setCurrentPage(requestModel.getPage());
+    responseListModel.setTotalCount(totalCount);
+    responseListModel.setPageSize(requestModel.getSize());
+
+    if (totalCount < 1) {
+      responseListModel.setList(Collections.emptyList());
+      return responseListModel;
+    }
+
+    List<MarketItemHistoryListDao> daoList = marketItemMapper.listMarketItemHistory(requestModel);
+
+    List<MarketItemHistoryListResponseModel> list = daoList.stream()
+        .map(this::convertMarketItemHistoryListModel)
+        .collect(Collectors.toList());
+
+    responseListModel.setList(list);
+
+    return responseListModel;
+
+  }
+
+  public List<ItemBuyListResponseModel> listItemByMember(
+      ItemBuyListByUidRequestModel requestModel) {
+    List<ItemBuyDetailDao> dao = itemBuyMapper.listByUid(requestModel);
+
+    return dao.stream().map(this::convertItemBuyListResponseModel)
+        .collect(Collectors.toList());
+
+  }
+
+  public List<MarketItemResellResponseModel> listMarketItemResell(
+      MarketItemResellListRequestModel requestModel) {
+
+    List<MarketItemResellDao> daoList = marketItemMapper.listMarketItemResell(requestModel);
+
+    return daoList.stream().map(this::convertMarketItemResellResponseModel)
+        .collect(Collectors.toList());
+  }
+
+
+  public MarketItemMyResellResponseModel listMarketItemMyResell(
+      MarketItemResellListRequestModel requestModel) {
+
+    List<MarketItemResellDao> daoList = marketItemMapper.listMarketItemMyResell(requestModel);
+
+    if (daoList.isEmpty()) {
+      return MarketItemMyResellResponseModel.builder().itemList(Collections.emptyList()).build();
+    }
+
+    List<MarketItemResellResponseModel> responseModelList = daoList.stream()
+        .map(this::convertMarketItemResellResponseModel)
+        .collect(Collectors.toList());
+    long itemUid = responseModelList.get(0).getItemUid();
+    List<ItemFileDao> itemFileDaoList = itemFileMapper.listFile(
+        ItemFileDao.builder().itemUid(itemUid).build());
+    List<ItemFileResponseModel> itemFileList = itemFileDaoList.stream()
+        .map(this::convertItemFileResponseModel).collect(Collectors.toList());
+    return MarketItemMyResellResponseModel.builder()
+        .itemList(responseModelList)
+        .itemFileList(itemFileList)
+        .build();
+  }
+
+  @Transactional
+  public void marketItemCancelResell(MarketItemCancelResellRequestModel requestModel) {
+    int count = marketItemMapper.countMarketItemMyResell(requestModel);
+
+    if (count < 1) {
+      throw new ServiceException(Constants.MSG_NO_DATA);
+    }
+    //판매 되지 않은 디테일 데이터 조회
+    MarketItemDetailListRequestModel marketItemDetailListRequestModel = new MarketItemDetailListRequestModel();
+    marketItemDetailListRequestModel.setMarketItemUid(requestModel.getMarketItemUid());
+    List<MarketItemDetailTableDao> detailTableDaoList = marketItemDetailMapper.list(
+        marketItemDetailListRequestModel);
+
+    if (detailTableDaoList.isEmpty()) {
+      throw new ServiceException(Constants.MSG_MARKET_ITEM_ZERO_QUANTITY_SELL_ERROR);
+    }
+
+    // 판매 취소 플래그 업데이트
+    marketItemMapper.updateCancelMarketItem(MarketItemDao.builder()
+        .uid(requestModel.getMarketItemUid())
+        .cancelTransactionHash(requestModel.getCancelTransactionHash().getHash()).build());
+
+    for (MarketItemDetailTableDao detailTableDao : detailTableDaoList) {
+      // 판매 취소 된 수량 의 구매 수량 업데이트
+      itemMapper.updateItemCurrentQuantity(ItemDao.builder()
+          .uid(detailTableDao.getItemUid())
+          .currentQuantity(1)
+          .build());
+    }
+
+  }
+
 
   public ResponseListModel listItemBuyByMember(ItemBuyListRequestModel requestModel) {
     ResponseListModel responseListModel = new ResponseListModel();
@@ -208,6 +408,28 @@ public class MarketItemService {
     return responseModel;
   }
 
+  public MarketItemDetailListResponseModel listMarketItemDetail(
+      MarketItemDetailListRequestModel requestModel) {
+
+    List<MarketItemDetailTableDao> daoList = marketItemDetailMapper.list(requestModel);
+
+    if (daoList.isEmpty()) {
+      throw new ServiceException(Constants.MSG_NO_DATA);
+    }
+
+    List<MarketItemDetailListModel> detailList = daoList.stream()
+        .map(this::convertMarketItemDetailListModel).collect(Collectors.toList());
+
+    List<ItemFileDao> fileDaoList = itemFileMapper.listFile(
+        ItemFileDao.builder().itemUid(daoList.get(0).getItemUid()).build());
+
+    return MarketItemDetailListResponseModel.builder().detailList(detailList).fileList(
+        fileDaoList.stream().map(this::convertItemFileResponseModel).collect(Collectors.toList())
+    ).build();
+
+
+  }
+
   public List<SellMemberResponseModel> listSellMember() {
     List<SellMemberDao> sellMemberDaoList = marketItemMapper.listSellMember();
 
@@ -225,8 +447,74 @@ public class MarketItemService {
     marketItemMapper.deleteItemFile(dao);
     marketItemMapper.deleteMarketItem(dao);
     marketItemMapper.deleteItem(dao);
+  }
 
+  private MarketItemHistoryListResponseModel convertMarketItemHistoryListModel(
+      MarketItemHistoryListDao dao) {
+    return MarketItemHistoryListResponseModel.builder()
+        .event(dao.getEvent())
+        .createdAt(dao.getCreatedAt())
+        .transactionHash(dao.getTransactionHash())
+        .price(dao.getPrice())
+        .number(dao.getNumber())
+        .fromWalletAddress(dao.getFromWalletAddress())
+        .toWalletAddress(dao.getToWalletAddress())
+        .usdPrice(dao.getUsdPrice())
+        .fogPrice(dao.getFogPrice())
+        .totalPrice(dao.getTotalPrice())
+        .usdTotalPrice(dao.getUsdTotalPrice())
+        .fogTotalPrice(dao.getFogTotalPrice())
+        .quantity(dao.getQuantity())
+        .build();
+  }
 
+  private MarketItemDetailListModel convertMarketItemDetailListModel(MarketItemDetailTableDao dao) {
+    return MarketItemDetailListModel.builder()
+        .uid(dao.getUid())
+        .createdAt(dao.getCreatedAt())
+        .updatedAt(dao.getUpdatedAt())
+        .deletedFlag(dao.isDeletedFlag())
+        .usedFlag(dao.getUsedFlag())
+        .marketItemUid(dao.getMarketItemUid())
+        .itemBuyUid(dao.getItemBuyUid())
+        .sellFlag(dao.isSellFlag())
+        .itemUid(dao.getItemUid())
+        .imageUri("https://" + s3EndPoint + "/" + s3NftBucket + dao.getImageUri())
+        .price(dao.getPrice())
+        .usdPrice(dao.getUsdPrice())
+        .fogPrice(dao.getFogPrice())
+        .indexName(dao.getIndexName())
+        .build();
+
+  }
+
+  private MarketItemResellResponseModel convertMarketItemResellResponseModel(
+      MarketItemResellDao dao) {
+    return MarketItemResellResponseModel.builder()
+        .uid(dao.getUid())
+        .createdAt(dao.getCreatedAt())
+        .updatedAt(dao.getUpdatedAt())
+        .deletedFlag(dao.isDeletedFlag())
+        .usedFlag(dao.getUsedFlag())
+        .quantity(dao.getQuantity())
+        .currentQuantity(dao.getCurrentQuantity())
+        .price(dao.getPrice())
+        .usdPrice(dao.getUsdPrice())
+        .fogPrice(dao.getFogPrice())
+        .transactionHash(dao.getTransactionHash())
+        .sellId(dao.getSellId())
+        .nftId(dao.getNftId())
+        .mintingStatus(dao.getMintingStatus())
+        .totalPrice(dao.getTotalPrice())
+        .usdTotalPrice(dao.getUsdTotalPrice())
+        .fogTotalPrice(dao.getTotalPrice())
+        .indexName(dao.getIndexName())
+        .walletAddress(dao.getWalletAddress())
+        .projectName(dao.getProjectName())
+        .imageUri("https://" + s3EndPoint + "/" + s3NftBucket + dao.getImageUri())
+        .itemUid(dao.getItemUid())
+        .tokenUri("https://" + s3EndPoint + "/" + s3NftBucket + dao.getTokenUri())
+        .build();
   }
 
   private SellMemberResponseModel convertSellMemberResponseModel(SellMemberDao dao) {

@@ -2,6 +2,7 @@ package com.labshigh.realestate.internal.api.item.model.request;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.List;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -19,4 +20,12 @@ public class MarketItemInsertRequestModel {
   private LocalDate endAt;
   private String transactionHash;
   private BigDecimal price;
+
+
+  /*
+   * 재판매시 사용되는 파라미터들
+   * */
+  private long marketItemUid;
+  private List<Long> itemBuyUidList;
+
 }

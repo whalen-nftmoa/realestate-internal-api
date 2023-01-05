@@ -2,6 +2,7 @@ package com.labshigh.realestate.internal.api.marketItem.mapper;
 
 import com.labshigh.realestate.internal.api.marketItem.dao.ItemBuyDao;
 import com.labshigh.realestate.internal.api.marketItem.dao.ItemBuyDetailDao;
+import com.labshigh.realestate.internal.api.marketItem.model.request.ItemBuyListByUidRequestModel;
 import com.labshigh.realestate.internal.api.marketItem.model.request.ItemBuyListRequestModel;
 import java.util.List;
 import org.apache.ibatis.annotations.Mapper;
@@ -17,6 +18,8 @@ public interface ItemBuyMapper {
   int count(@Param(value = "request") ItemBuyListRequestModel requestModel);
 
   List<ItemBuyDetailDao> list(@Param(value = "request") ItemBuyListRequestModel requestModel);
+
+  List<ItemBuyDetailDao> listByUid(ItemBuyListByUidRequestModel requestModel);
 
   int countByMember(@Param(value = "request") ItemBuyListRequestModel requestModel);
 
