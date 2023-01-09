@@ -297,7 +297,8 @@
     LEFT OUTER JOIN realestate.`member` m ON i.member_uid = m.uid AND m.deleted_flag = false AND m.used_flag = true
     WHERE 	mi.deleted_flag = false AND
     mi.used_flag = true AND
-    mi.minting_status = 1
+    mi.minting_status = 1  AND
+    mi.item_uid > 0
   </select>
 
   <select id="listMarketItemHistory" resultType="com.labshigh.realestate.internal.api.marketItem.dao.MarketItemHistoryListDao">
