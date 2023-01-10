@@ -24,9 +24,10 @@ public class MarketItemReSellInsertRequestValidator implements Validator {
           String.format(Constants.MSG_REQUIRE_FIELD_ERROR, "marketItemUid"));
     }
 
-    if (requestModel.getPrice().compareTo(BigDecimal.ONE) < 0) {
-      errors.reject("price.required",
-          String.format(Constants.MSG_REQUIRE_FIELD_ERROR, "price"));
+    if (requestModel.getFogPrice() == null
+        || requestModel.getFogPrice().compareTo(BigDecimal.ONE) < 0) {
+      errors.reject("fogPrice.required",
+          String.format(Constants.MSG_REQUIRE_FIELD_ERROR, "fogPrice"));
     }
 
     if (requestModel.getItemBuyUidList() == null || requestModel.getItemBuyUidList().isEmpty()) {
