@@ -25,7 +25,8 @@ public class MarketItemReSellInsertRequestValidator implements Validator {
     }
 
     if (requestModel.getFogPrice() == null
-        || requestModel.getFogPrice().compareTo(BigDecimal.ZERO) < 0) {
+        || requestModel.getFogPrice().compareTo(BigDecimal.ZERO) < 0
+        || requestModel.getFogPrice().compareTo(BigDecimal.ZERO) == 0) {
       errors.reject("fogPrice.required",
           String.format(Constants.MSG_REQUIRE_FIELD_ERROR, "fogPrice"));
     }

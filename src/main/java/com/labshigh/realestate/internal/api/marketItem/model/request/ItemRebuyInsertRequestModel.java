@@ -13,6 +13,7 @@ public class ItemRebuyInsertRequestModel {
   private long itemUid;
   private long marketItemUid;
   private BigDecimal price;
+  private BigDecimal fogPrice;
   private String nftId;
   private String contractAddress;
   private int quantity;
