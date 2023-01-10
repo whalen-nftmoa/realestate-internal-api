@@ -28,6 +28,8 @@ public class ItemBuyDao {
   private long itemUid;
   private long marketItemUid;
   private BigDecimal price;
+
+  private BigDecimal fogPrice;
   private String nftId;
   private String contractAddress;
   private long index;

@@ -203,6 +203,7 @@ public class MarketItemService {
           .itemUid(itemDao.getUid())
           .index(itemDao.getIndex())
           .transactionHash(requestModel.getTransactionHash().getHash())
+          .fogPrice(requestModel.getFogPrice())
           .build();
       itemBuyMapper.insert(itemBuyDao);
 

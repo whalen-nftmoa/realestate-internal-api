@@ -27,8 +27,10 @@ public class ItemRebuyInsertRequestValidator implements Validator {
               "marketItemUidOrMarketItemDetailUidList"));
     }
 
-    if (requestModel.getPrice().compareTo(BigDecimal.ONE) < 0) {
-      errors.reject("price.required", String.format(Constants.MSG_REQUIRE_FIELD_ERROR, "price"));
+    if (requestModel.getFogPrice().compareTo(BigDecimal.ZERO) < 0
+        || requestModel.getFogPrice().compareTo(BigDecimal.ZERO) == 0) {
+      errors.reject("fogPrice.required",
+          String.format(Constants.MSG_REQUIRE_FIELD_ERROR, "fogPrice"));
     }
   }
 }
