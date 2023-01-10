@@ -2,6 +2,10 @@ app:
   profile: prod
 
 spring:
+  redis:
+    host: redisc-dppvc.vpc-cdb.ntruss.com
+    port: 6379
+    database: 0
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://db-dppkk.vpc-cdb.ntruss.com/realestate?&zeroDateTimeBehavior=convertToNull&autoReconnect=true&noAccessToProcedureBodies=true&useUnicode=true&characterEncoding=UTF-8&useSSL=false&serverTimezone=Asia/Seoul
@@ -38,5 +42,15 @@ ncloud:
     end-point: kr.object.ncloudstorage.com
     region: kr-standard
     bucket: realestate-s3
+  mail-storage:
+    end-point: https://mail.apigw.ntruss.com/api/v1/mails
+    email-template-id: 8260
+    tokenExpirationTime: 24 # 60*60*24
+  sms-storage:
+    end-point: https://sens.apigw.ntruss.com/sms/v2
+    service-id: ncp:sms:kr:278692193707:nftmoa_io
+    send-url: /service/${ncloud.sms-storage.service-id}/messages
+    from-phone-number: 01096361079
+    expirationTime: 1440 # 60*60*24
 
 
