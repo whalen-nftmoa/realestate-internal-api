@@ -183,6 +183,7 @@ public class ItemService {
         .quantity(itemBuyDetailDaoList.size())
         .currentQuantity(itemBuyDetailDaoList.size())
         .price(requestModel.getPrice())
+        .fogPrice(requestModel.getFogPrice())
         .transactionHash(requestModel.getTransactionHash())
         .firstMarketItemUid(requestModel.getMarketItemUid())
         .build();

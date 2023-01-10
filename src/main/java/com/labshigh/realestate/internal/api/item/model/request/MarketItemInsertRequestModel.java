@@ -20,6 +20,7 @@ public class MarketItemInsertRequestModel {
   private LocalDate endAt;
   private String transactionHash;
   private BigDecimal price;
+  private BigDecimal fogPrice;
 
 
   /*

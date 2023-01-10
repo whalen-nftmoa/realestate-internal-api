@@ -33,6 +33,7 @@ public class MarketItemDao {
   @JsonFormat(pattern = Constants.JSONFY_DATE_FORMAT)
   private LocalDateTime endAt;
   private BigDecimal price;
+  private BigDecimal fogPrice;
   private String transactionHash;
   private String sellId;
   private String nftId;
