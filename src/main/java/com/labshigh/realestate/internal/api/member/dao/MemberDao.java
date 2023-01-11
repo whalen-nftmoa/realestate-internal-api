@@ -28,6 +28,6 @@ public class MemberDao {
   private String phoneNumber;
   private boolean phoneVerifiedFlag;
   private boolean emailNewsletterFlag;
-
+  private String nationalCode;
   private String walletAddress;
 }

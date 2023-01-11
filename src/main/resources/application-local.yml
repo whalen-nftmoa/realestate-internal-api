@@ -48,6 +48,6 @@ ncloud:
   sms-storage:
     end-point: https://sens.apigw.ntruss.com/sms/v2
     service-id: ncp:sms:kr:278692193707:nftmoa_io
-    send-url: /service/${ncloud.sms-storage.service-id}/messages
-    from-phone-number: 01096361079
+    send-url: /services/${ncloud.sms-storage.service-id}/messages
+    from-phone-number: "01096361079"
     expirationTime: 1440 # 60*60*24

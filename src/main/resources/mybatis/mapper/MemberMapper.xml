@@ -17,7 +17,8 @@
            email_verified_flag,
            phone_number,
            phone_verified_flag,
-           email_newsletter_flag
+           email_newsletter_flag,
+           national_code
     FROM member
     WHERE deleted_flag = false AND
           used_flag = true AND
@@ -39,6 +40,14 @@
     WHERE deleted_flag = false AND
         used_flag = true AND
         uid = #{uid}
+  </update>
+
+  <update id="updatePhoneNumber">
+    UPDATE member
+    SET phone_number = #{phoneNumber} , national_code = #{nationalCode} , phone_verified_flag = #{phoneVerifiedFlag}
+    WHERE deleted_flag = false AND
+      used_flag = true AND
+      uid = #{uid}
   </update>
 
 </mapper>

@@ -13,13 +13,14 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class SmsRequestModel {
+
   private String type;
   private String contentType;
   private String countryCode;
   private String from;
   private String subject;
   private String content;
-  private List<SmsMessage> smsMessages;
+  private List<SmsMessage> messages;
   private List<SmsFile> smsFiles;
   private String reserveTime;
   private String receiveTimeZone;

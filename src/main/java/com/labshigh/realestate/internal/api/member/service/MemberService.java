@@ -9,10 +9,13 @@ import com.labshigh.realestate.internal.api.common.utils.MailUtils;
 import com.labshigh.realestate.internal.api.common.utils.SmsUtils;
 import com.labshigh.realestate.internal.api.common.utils.models.MailReceiveInfo;
 import com.labshigh.realestate.internal.api.common.utils.models.MailRequestModel;
+import com.labshigh.realestate.internal.api.common.utils.models.SmsMessage;
+import com.labshigh.realestate.internal.api.common.utils.models.SmsRequestModel;
 import com.labshigh.realestate.internal.api.member.dao.MemberDao;
 import com.labshigh.realestate.internal.api.member.mapper.MemberMapper;
 import com.labshigh.realestate.internal.api.member.model.request.MemberGetByWalletAddressRequestModel;
 import com.labshigh.realestate.internal.api.member.model.request.MemberInsertMetaMaskRequestModel;
+import com.labshigh.realestate.internal.api.member.model.request.MemberSendSmsVerifyRequestModel;
 import com.labshigh.realestate.internal.api.member.model.request.MemberSendVerifyEmailRequestModel;
 import com.labshigh.realestate.internal.api.member.model.request.VerifyEmailModel;
 import com.labshigh.realestate.internal.api.member.model.response.MemberResponseModel;
@@ -23,9 +26,12 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import javax.naming.AuthenticationException;
 import lombok.extern.log4j.Log4j2;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -36,6 +42,7 @@ public class MemberService {
   private final MemberMapper memberMapper;
   private final MailUtils mailUtils;
   private final SmsUtils smsUtils;
+  private final RedisTemplate redisTemplate;
 
   @Value("${ncloud.mail-storage.email-verify-template-id}")
   private Integer emailVerifiedTemplateId;
@@ -46,10 +53,12 @@ public class MemberService {
   @Value("${ncloud.sms-storage.expirationTime}")
   private long smsExpirationTime;
 
-  public MemberService(MemberMapper memberMapper, MailUtils mailUtils, SmsUtils smsUtils) {
+  public MemberService(MemberMapper memberMapper, MailUtils mailUtils, SmsUtils smsUtils,
+      RedisTemplate redisTemplate) {
     this.memberMapper = memberMapper;
     this.mailUtils = mailUtils;
     this.smsUtils = smsUtils;
+    this.redisTemplate = redisTemplate;
   }
 
   @Transactional
@@ -187,6 +196,51 @@ public class MemberService {
 
   }
 
+  @Transactional
+  public void sendVerifySms(MemberSendSmsVerifyRequestModel requestModel) {
+    MemberDao dao = memberMapper.get(
+        MemberDao.builder().uid(requestModel.getMemberUid()).build());
+
+    if (dao == null) {
+      throw new ServiceException(Constants.MSG_MEMBER_NO);
+    }
+    if (dao.getPhoneNumber() != null) {
+      if (dao.getPhoneNumber().equals(requestModel.getPhoneNumber()) && dao.isPhoneVerifiedFlag()) {
+        throw new ServiceException(Constants.MSG_ALREADY_VERIFIED_SMS);
+      }
+    }
+    dao.setPhoneNumber(requestModel.getPhoneNumber());
+    dao.setNationalCode(requestModel.getNationalCode());
+
+    memberMapper.updatePhoneNumber(dao);
+
+    String verifyCode = RandomStringUtils.randomNumeric(6);
+
+    String smsContent = String.format(Constants.MSG_VERIFY_CONTENT_SMS, verifyCode);
+
+    List<SmsMessage> smsMessages = new ArrayList<>();
+    smsMessages.add(SmsMessage.builder()
+        .to(requestModel.getPhoneNumber())
+        .content(smsContent)
+        .build());
+
+    SmsRequestModel smsRequestModel = SmsRequestModel.builder()
+        .type("SMS")
+        .contentType("COMM")
+        .countryCode(requestModel.getNationalCode())
+        .from(fromPhoneNumber)
+        .content(smsContent)
+        .messages(smsMessages)
+        .build();
+    smsUtils.send(smsRequestModel);
+
+    redisTemplate.opsForValue()
+        .set("verifyPhonNumber:" + requestModel.getNationalCode()
+                + requestModel.getPhoneNumber(),
+            verifyCode, smsExpirationTime, TimeUnit.SECONDS);
+
+  }
+
   private MemberDao checkToken(String token, Integer templateId) {
     VerifyEmailModel verifyEmailModel = JsonUtils.convertJsonStringToObject(
         CryptoHelper.decrypt(token), VerifyEmailModel.class);
@@ -224,6 +278,7 @@ public class MemberService {
         .phoneNumber(dao.getPhoneNumber())
         .phoneVerifiedFlag(dao.isPhoneVerifiedFlag())
         .emailNewsletterFlag(dao.isEmailNewsletterFlag())
+        .nationalCode(dao.getNationalCode())
         .build();
   }
 

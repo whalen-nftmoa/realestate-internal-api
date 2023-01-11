@@ -12,6 +12,8 @@ public interface MemberMapper {
 
   void updateEmail(MemberDao memberDao);
 
+  void updatePhoneNumber(MemberDao memberDao);
+
   MemberDao get(MemberDao memberDao);
 
 

@@ -60,7 +60,7 @@ public class Constants {
   public static final String MSG_ALREADY_VERIFIED_EMAIL = "이미 메일 인증이 되었습니다.";
   public static final String MSG_NOT_VERIFIED_EMAIL = "메일 인증이 되지 않았습니다.";
   public static final String MSG_ALREADY_VERIFIED_SMS = "이미 SMS 인증이 되었습니다.";
-  public static final String MSG_VERIFY_CONTENT_SMS = "From NFTMOA: %s is your verification code.\nIf you didn’t request this code, please contact us on information@labshigh.io";
+  public static final String MSG_VERIFY_CONTENT_SMS = "From FOGREM: %s is your verification code.\nIf you didn’t request this code, please contact us on Help@fognet.io";
 
 
   // 계정 종류 (1:email, 2:metamask)
