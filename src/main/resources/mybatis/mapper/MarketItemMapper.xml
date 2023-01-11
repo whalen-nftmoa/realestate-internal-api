@@ -217,6 +217,7 @@
            (mi.fog_price * mi.current_quantity) * fog.price * usd.base_price  AS total_price ,
            (mi.fog_price * mi.current_quantity) * fog.price AS usd_total_price,
            mi.fog_price * mi.current_quantity  AS fog_total_price,
+           ib.fog_price AS prev_fog_price,
            mi.transaction_hash,
            mi.sell_id,
            mi.nft_id,

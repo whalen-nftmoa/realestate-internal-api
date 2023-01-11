@@ -504,6 +504,7 @@ public class MarketItemService {
         .price(dao.getPrice())
         .usdPrice(dao.getUsdPrice())
         .fogPrice(dao.getFogPrice())
+        .prevFogPrice(dao.getPrevFogPrice())
         .transactionHash(dao.getTransactionHash())
         .sellId(dao.getSellId())
         .nftId(dao.getNftId())

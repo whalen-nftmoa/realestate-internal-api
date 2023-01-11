@@ -30,6 +30,7 @@ public class MarketItemResellDao {
   private BigDecimal price;
   private BigDecimal usdPrice;
   private BigDecimal fogPrice;
+  private BigDecimal prevFogPrice;
   private String transactionHash;
   private String sellId;
   private String nftId;
