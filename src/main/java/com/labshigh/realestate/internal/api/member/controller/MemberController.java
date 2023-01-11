@@ -5,9 +5,11 @@ import com.labshigh.realestate.internal.api.common.Constants;
 import com.labshigh.realestate.internal.api.common.exceptions.ServiceException;
 import com.labshigh.realestate.internal.api.member.model.request.MemberGetByWalletAddressRequestModel;
 import com.labshigh.realestate.internal.api.member.model.request.MemberInsertMetaMaskRequestModel;
+import com.labshigh.realestate.internal.api.member.model.request.MemberSendVerifyEmailRequestModel;
 import com.labshigh.realestate.internal.api.member.service.MemberService;
 import com.labshigh.realestate.internal.api.member.validator.MemberGetByWalletAddressRequestValidator;
 import com.labshigh.realestate.internal.api.member.validator.MemberInsertMetaMaskRequestValidator;
+import com.labshigh.realestate.internal.api.member.validator.MemberSendVerifyEmailRequestValidator;
 import io.swagger.annotations.ApiOperation;
 import javax.naming.AuthenticationException;
 import lombok.extern.log4j.Log4j2;
@@ -125,4 +127,40 @@ public class MemberController {
 
     return responseModel.toResponse();
   }
+
+  @ApiOperation(value = "인증메일 발송")
+  @PostMapping(value = "/{memberUid}/verifyEmail", produces = {Constants.RESPONSE_CONTENT_TYPE})
+  public ResponseEntity<String> sendVerifyEmail(@PathVariable(value = "memberUid") long memberUid,
+      @RequestBody MemberSendVerifyEmailRequestModel memberSendVerifyEmailRequestModel,
+      BindingResult bindingResult) {
+    memberSendVerifyEmailRequestModel.setMemberUid(memberUid);
+
+    ResponseModel responseModel = new ResponseModel();
+
+    MemberSendVerifyEmailRequestValidator.builder().build()
+        .validate(memberSendVerifyEmailRequestModel, bindingResult);
+
+    if (bindingResult.hasErrors()) {
+      responseModel.setStatus(HttpStatus.PRECONDITION_FAILED.value());
+      responseModel.setMessage(bindingResult.getAllErrors().get(0).getDefaultMessage());
+    } else {
+
+      try {
+
+        responseModel = memberService.sendVerifyEmail(memberSendVerifyEmailRequestModel);
+      } catch (ServiceException e) {
+        responseModel.setStatus(HttpStatus.PRECONDITION_FAILED.value());
+        responseModel.setMessage(e.getMessage());
+      } catch (Exception e) {
+        responseModel.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
+        responseModel.setMessage(HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase());
+        responseModel.error.setErrorCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
+        responseModel.error.setErrorMessage(e.getLocalizedMessage());
+      }
+    }
+
+    return responseModel.toResponse();
+  }
+
+
 }

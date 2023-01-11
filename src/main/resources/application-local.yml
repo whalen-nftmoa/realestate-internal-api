@@ -43,8 +43,7 @@ ncloud:
     bucket: realestate-s3
   mail-storage:
     end-point: https://mail.apigw.ntruss.com/api/v1/mails
-    join-template-id: 7168
-    password-template-id: 7169
+    email-verify-template-id: 8260
     tokenExpirationTime: 1440 # 60*60*24
   sms-storage:
     end-point: https://sens.apigw.ntruss.com/sms/v2

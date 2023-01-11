@@ -10,6 +10,8 @@ public interface MemberMapper {
 
   void insert(MemberDao memberDao);
 
+  void updateEmail(MemberDao memberDao);
+
   MemberDao get(MemberDao memberDao);
 
 

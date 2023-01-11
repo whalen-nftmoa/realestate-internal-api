@@ -19,6 +19,10 @@ public class MemberResponseModel {
   private LocalDateTime updatedAt;
   private boolean deletedFlag;
   private boolean usedFlag;
-
+  private String email;
+  private boolean emailVerifiedFlag;
+  private String phoneNumber;
+  private boolean phoneVerifiedFlag;
+  private boolean emailNewsletterFlag;
   private String walletAddress;
 }
