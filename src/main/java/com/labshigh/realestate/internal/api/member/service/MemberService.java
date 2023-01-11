@@ -20,6 +20,7 @@ import java.security.SignatureException;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import javax.naming.AuthenticationException;
@@ -169,6 +170,45 @@ public class MemberService {
     log.debug("mailSendResult : {}", JsonUtils.convertObjectToJsonString(result));
 
     return result;
+  }
+
+  @Transactional
+  public void verifyEmail(String token) {
+
+    MemberDao dao = this.checkToken(token, emailVerifiedTemplateId);
+
+    if (dao.isEmailVerifiedFlag()) {
+      throw new ServiceException(Constants.MSG_ALREADY_VERIFIED_EMAIL);
+    }
+
+    dao.setEmailVerifiedFlag(true);
+
+    memberMapper.updateEmail(dao);
+
+  }
+
+  private MemberDao checkToken(String token, Integer templateId) {
+    VerifyEmailModel verifyEmailModel = JsonUtils.convertJsonStringToObject(
+        CryptoHelper.decrypt(token), VerifyEmailModel.class);
+    log.debug("verifyEmailModel : {}", JsonUtils.convertObjectToJsonString(verifyEmailModel));
+
+    if (verifyEmailModel == null || !verifyEmailModel.getTemplateId().equals(templateId)) {
+      throw new ServiceException(Constants.MSG_TOKEN_ERROR);
+    }
+
+    long curTimeStamp = new Date().getTime();
+
+    log.debug("curTimeStamp : {}", curTimeStamp);
+    if (curTimeStamp > verifyEmailModel.getVerifyTime()) {
+      throw new ServiceException(Constants.MSG_TOKEN_ERROR);
+    }
+
+    MemberDao dao = memberMapper.get(MemberDao.builder().uid(verifyEmailModel.getUid()).build());
+    if (dao == null) {
+      throw new ServiceException(Constants.MSG_MEMBER_NO);
+    }
+
+    return dao;
   }
 
   private MemberResponseModel convertMemberResponseModel(MemberDao dao) {

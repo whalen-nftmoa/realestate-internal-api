@@ -35,7 +35,7 @@
   </select>
   <update id="updateEmail">
     UPDATE member
-    SET email = #{email} , email_verified_flag = false, email_newsletter_flag = false
+    SET email = #{email} , email_verified_flag = #{emailVerifiedFlag}, email_newsletter_flag = #{emailNewsletterFlag}
     WHERE deleted_flag = false AND
         used_flag = true AND
         uid = #{uid}

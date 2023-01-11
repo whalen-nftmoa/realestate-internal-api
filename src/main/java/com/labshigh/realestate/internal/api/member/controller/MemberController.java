@@ -1,6 +1,7 @@
 package com.labshigh.realestate.internal.api.member.controller;
 
 import com.labshigh.realestate.core.models.ResponseModel;
+import com.labshigh.realestate.core.utils.StringUtils;
 import com.labshigh.realestate.internal.api.common.Constants;
 import com.labshigh.realestate.internal.api.common.exceptions.ServiceException;
 import com.labshigh.realestate.internal.api.member.model.request.MemberGetByWalletAddressRequestModel;
@@ -19,6 +20,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -157,6 +159,29 @@ public class MemberController {
         responseModel.error.setErrorCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
         responseModel.error.setErrorMessage(e.getLocalizedMessage());
       }
+    }
+
+    return responseModel.toResponse();
+  }
+
+  @ApiOperation(value = "token을 이용한 email 인증 하기")
+  @PutMapping(value = "/verifyEmail/{token}", produces = {Constants.RESPONSE_CONTENT_TYPE})
+  public ResponseEntity<String> verifyEmail(@PathVariable(value = "token") String token) {
+    ResponseModel responseModel = new ResponseModel();
+    try {
+
+      if (StringUtils.isEmpty(token)) {
+        throw new ServiceException(Constants.MSG_TOKEN_ERROR);
+      }
+      memberService.verifyEmail(token);
+    } catch (ServiceException e) {
+      responseModel.setStatus(HttpStatus.PRECONDITION_FAILED.value());
+      responseModel.setMessage(e.getMessage());
+    } catch (Exception e) {
+      responseModel.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
+      responseModel.setMessage(HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase());
+      responseModel.error.setErrorCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
+      responseModel.error.setErrorMessage(e.getLocalizedMessage());
     }
 
     return responseModel.toResponse();
